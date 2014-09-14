@@ -47,6 +47,28 @@ for (i=0; i < 26; i++) {
 //saveSaveData();
 console.log(herodata); //For Debugging purposes
 
+//Converts 1234567 into 1,234,567. Also is compatible with decimals: 1234567.8910 -> 1,234,567.8910
+function numberWithCommas(number) {
+    var parts = number.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}
+
+//Converts a number into what is shown InGame
+function formatNumber(number) {
+	var SISymbols = ["","","K","M","B","T","q","Q","s","S","O","N","d","D","!","@","#","$","%","^","%","*"];
+	var digitCount = Math.floor(1+(Math.log(number)/Math.LN10));
+	if (digitCount > 64) {
+		var symbol = "*";
+		var digitsShown = digitCount - 59
+	} else {
+		var symbol = SISymbols[Math.floor(digitCount/3)];
+		var digitsShown = 3 + (digitCount % 3);
+	}
+	var truncNumber = Math.floor(number/Math.pow(10,digitCount-digitsShown));
+	return numberWithCommas(truncNumber) + symbol;
+}
+
 //Temporary Incremental Game
 function increment() {
 	document.getElementById("counter").innerHTML = parseInt(document.getElementById("counter").innerHTML) + 1;
