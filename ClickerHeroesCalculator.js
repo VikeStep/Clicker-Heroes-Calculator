@@ -55,19 +55,32 @@ function numberWithCommas(number) {
 }
 
 //Converts a number into what is shown InGame
-function formatNumber(number) {
+function formatNumber(num) {
+	var sign = num && num/Math.abs(num);
+	var number = Math.abs(num);
 	var SISymbols = ["","","K","M","B","T","q","Q","s","S","O","N","d","D","!","@","#","$","%","^","%","*"];
-	var digitCount = Math.floor(1+(Math.log(number)/Math.LN10));
+	var digitCount = 	number && Math.floor(1+(Math.log(number)/Math.LN10));
 	if (digitCount > 64) {
 		var symbol = "*";
 		var digitsShown = digitCount - 59
+	} else if (digitCount < 6) {
+		symbol = "";
+		digitsShown = digitCount
 	} else {
 		var symbol = SISymbols[Math.floor(digitCount/3)];
 		var digitsShown = 3 + (digitCount % 3);
 	}
 	var truncNumber = Math.floor(number/Math.pow(10,digitCount-digitsShown));
-	return numberWithCommas(truncNumber) + symbol;
+	if (sign == 1) {
+		return numberWithCommas(truncNumber) + symbol;
+	} else if (sign == -1) {
+		return "-" + numberWithCommas(truncNumber) + symbol;
+	} else {
+		return 0;
+	}
 }
+
+console.log(formatNumber(-1234567));
 
 //Temporary Incremental Game
 function increment() {
