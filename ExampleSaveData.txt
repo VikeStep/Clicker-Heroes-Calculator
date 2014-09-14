@@ -1,15 +1,15 @@
-{"maxDps":513676499052774700000,						GRAB
+{"maxDps":513676499052774700000,
 "stageQuality":true,
 "lastLoadTime":0,
-"clickMultiplier":210,												GRAB
-"gold":2.31426906465136e+23,								GRAB
+"clickMultiplier":210,
+"gold":2.31426906465136e+23,
 "privateAdminMessages":{},
-"allDpsMultiplier":12.296168481673813,					GRAB
+"allDpsMultiplier":12.296168481673813,
 "activityRoller":null,
-"goldMultiplier":2.9296875,										GRAB
+"goldMultiplier":2.9296875,
 "version":7,
 "remoteQueue":null,
-"clickDpsPercent":3,												GRAB
+"clickDpsPercent":3,
 "account":null,
 "creationTimestamp":1410426821140,
 "soulsSpent":0,													GRAB
@@ -345,9 +345,9 @@
 "42":true},
 "secondToLastSkillUsed":6,
 "highestFinishedZone":104,										GRAB
-"baseCriticalClickChance":9,										GRAB
+"baseCriticalClickChance":9,
 "highestFinishedZonePersist":104,
-"criticalMultiplier":18,												GRAB
+"criticalMultiplier":18,
 "currentZoneHeight":104,
 "worldGoldBonus":0,
 "totalClicks":43176,
@@ -355,7 +355,7 @@
 "totalGold":1.04125715689323e+24,
 "heroSouls":0,															GRAB
 "totalGoldThisGame":1.04125715689323e+24,
-"baseClickDamage":5,												GRAB
+"baseClickDamage":5,
 "totalKills":13359,
 "tutorialArrow":2,
 "totalBossKills":412,

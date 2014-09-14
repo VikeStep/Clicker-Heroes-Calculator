@@ -13,6 +13,8 @@ function loadLocalStorage() {
 	}
 }
 
+//loadLocalStorage();
+
 //Will save the data to local storage
 function saveSaveData(data) {
 	if (typeof(Storage)!="undefined") {
@@ -42,7 +44,7 @@ for (i=0; i < 26; i++) {
 	}
 }
 
-//loadLocalStorage();
+//saveSaveData();
 console.log(herodata); //For Debugging purposes
 
 //Temporary Incremental Game
