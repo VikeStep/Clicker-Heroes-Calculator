@@ -6,19 +6,20 @@
     <body>
         <h1>Clicker Heroes Calculator</h1>
         <p>Made by VikeStep and stennett</p>
-        <p id="counter">0</p>
-        <button id="counterbtn" type="button">Add 1!</button>
+		<!--Do not put anything else below this comment-->
         <script type="text/javascript">
 			function downloadJSAtOnload() {
 				var element = document.createElement("script");
 				element.src = "ClickerHeroesCalculator.js";
 				document.body.appendChild(element);
 			}
-			if (window.addEventListener)
+			if (window.addEventListener) {
 				window.addEventListener("load", downloadJSAtOnload, false);
-			else if (window.attachEvent)
+			} else if (window.attachEvent) {
 				window.attachEvent("onload", downloadJSAtOnload);
-			else window.onload = downloadJSAtOnload;
+			} else {
+				window.onload = downloadJSAtOnload;
+			}
 		</script>
     </body>
 </html>
