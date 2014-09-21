@@ -357,6 +357,10 @@ function calculateAllEfficiencies() {
 	}
 }
 
+function purchaseToHeroName(purchase) {
+	return heroData[Number(purchase[0].split(",")[2])]["name"];
+}
+
 function recalculate() { //Will be called initially to calculate everything and whenever
 	calculateGlobalMultipliers();
 	calculateHeroData();
@@ -416,7 +420,7 @@ function saveSaveData() { //Will save the data to local storage
 }
 
 function updateDOM() { //Will put calculated elements onto their respective DOM elements
-	
+	document.getElementById("mostEfficient").innerHTML = "Most Efficient Purchase: " + purchaseToHeroName(mostEfficientPurchase);
 }
 
 function addEventListeners() { //Everything that requires waiting for user input goes here
@@ -424,7 +428,7 @@ function addEventListeners() { //Everything that requires waiting for user input
 }
 
 function debugLogger() {
-	console.log(heroData);
+	//console.log(heroData);
 	//console.log(achievData);
 	//console.log(upgradeData);
 	//console.log(ancientData);
