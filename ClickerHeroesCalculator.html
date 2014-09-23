@@ -7,7 +7,29 @@
     <body>
         <h1>Clicker Heroes Calculator</h1>
         <p>Made by VikeStep and stennett</p>
-		<p id="mostEfficient" >Most Efficient Purchase: Loading... </p>
+		<p>Enter your save data below and press Calculate</p>
+		<textarea id="savedata" rows="4" cols="50"></textarea>
+		<br/>
+		<input id="calculateSaveData" type="button" value="Calcuate"></input>
+		<p>Top 3 Most Efficient Purchases</p>
+		<table>
+			<tr>
+				<td>Purchase</td>
+				<td>Efficiency</td>
+			</tr>
+			<tr>
+				<td id="r1c1"></td>
+				<td id="r1c2"></td>
+			</tr>
+			<tr>
+				<td id="r2c1"></td>
+				<td id="r2c2"></td>
+			</tr>
+			<tr>
+				<td id="r3c1"></td>
+				<td id="r3c2"></td>
+			</tr>
+		</table>
 		<!--Do not put anything else below this comment-->
         <script type="text/javascript">
 			function downloadJSAtOnload() {
