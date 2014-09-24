@@ -2,3 +2,11 @@ h1 {
 	color: blue;
 	text-align: center;
 }
+
+table.fixed { 
+	table-layout:fixed; 
+}
+
+table.fixed td {
+	overflow: hidden;
+}

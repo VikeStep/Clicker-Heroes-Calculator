@@ -7,12 +7,14 @@
     <body>
         <h1>Clicker Heroes Calculator</h1>
         <p>Made by VikeStep and stennett</p>
+		<input id="saveAll" type="button" value="Save your Stuff!"></input>
 		<p>Enter your save data below and press Calculate</p>
 		<textarea id="savedata" rows="4" cols="50"></textarea>
 		<br/>
 		<input id="calculateSaveData" type="button" value="Calcuate"></input>
 		<p>Top 3 Most Efficient Purchases</p>
 		<table>
+			<col width = "300px" />
 			<tr>
 				<td>Purchase</td>
 				<td>Efficiency</td>
@@ -20,14 +22,17 @@
 			<tr>
 				<td id="r1c1"></td>
 				<td id="r1c2"></td>
+				<td><input id="purchase1" type="button" value="Purchase" onclick=purchase(0)></input></td>
 			</tr>
 			<tr>
 				<td id="r2c1"></td>
 				<td id="r2c2"></td>
+				<td><input id="purchase2" type="button" value="Purchase" onclick=purchase(1)></input></td>
 			</tr>
 			<tr>
 				<td id="r3c1"></td>
 				<td id="r3c2"></td>
+				<td><input id="purchase3" type="button" value="Purchase" onclick=purchase(2)></input></td>
 			</tr>
 		</table>
 		<!--Do not put anything else below this comment-->
