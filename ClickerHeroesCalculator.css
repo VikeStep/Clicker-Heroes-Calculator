@@ -1,12 +1,154 @@
+body {
+    background-color: Gray;
+}
+
 h1 {
-	color: blue;
-	text-align: center;
+    margin-bottom: -10px;
 }
 
-table.fixed { 
-	table-layout:fixed; 
+p {
+    margin-bottom: 10px;
 }
 
-table.fixed td {
-	overflow: hidden;
+#header {
+    color: white;
+    text-align:center;
+}
+
+#out {
+    background-color:Black;
+    float: right;
+    width: calc(60% - 3px);
+    height: 850px;
+	border: 2px solid;
+	border-left: 1px solid;
+}
+
+#in {
+    background-color:Black;   
+    float: left;
+    width: calc(40% - 3px);
+    height: 850px;
+	border: 2px solid;
+	border-right: 1px solid
+}
+
+#infoheader {
+    background-color: #E3DAC9;
+    text-align: center;
+    height: 38px;
+    line-height: 38px;
+	border-bottom: 2px solid;
+}
+
+#efficiencies {
+    float:left;
+    height: 404px;
+    background-color: #E3DAC9;
+    width: calc(50% - 6px);
+	border-bottom: 1px solid;
+	border-right: 1px solid;
+	padding-left: 5px;
+}
+
+#generaldata {
+    float: right;
+    height: 404px;
+    background-color: #E3DAC9;
+    width: calc(50% - 6px);
+	border-bottom: 1px solid;
+	border-left: 1px solid;
+	padding-left: 5px;
+}
+
+#piechart {
+    float:left;
+    height: 404px;
+    background-color: #E3DAC9;
+    width: calc(50% - 1px);
+	border-right: 1px solid;
+	border-top: 1px solid;
+}
+
+#herodata {
+    float: right;
+    height: 404px;
+    background-color: #E3DAC9;
+    width: calc(50% - 6px);
+	border-left: 1px solid;
+	border-top: 1px solid;
+	padding-left: 5px;
+}
+
+#savediv {
+    background-color: #E3DAC9;
+    height: 38px;
+	line-height: 38px;
+	border-bottom: 2px solid;
+	padding-left: 5px;
+}
+
+#options {
+    float:left;
+    height: 148px;
+    background-color: #E3DAC9;
+    width: calc(75% - 6px);
+	border-bottom: 2px solid;
+	border-right: 1px solid;
+	padding-left: 5px;
+}
+
+#buttons {
+    float: right;
+    height: 148px;
+    background-color: #E3DAC9;
+    width: calc(25% - 6px);
+	border-bottom: 2px solid;
+	border-left: 1px solid;
+	padding-left: 5px;
+}
+
+#navbar {
+    height: 38px;
+    background-color: #E3DAC9;
+    width: 100%;
+    float:left;
+	border-bottom: 2px solid;
+}
+
+#nav1 {
+    width: calc((100% - 4px)/3);
+    background-color: #E3DAC9;
+    float: left;
+    height: 38px;
+    line-height: 38px;
+    text-align: center;
+	border-right: 2px solid;
+}
+
+#nav2 {
+    width: calc((100% - 4px)/3);
+    background-color: #E3DAC9;
+    float: left;
+    height: 38px;
+    line-height: 38px;
+    text-align: center;
+}
+
+#nav3 {
+    width: calc((100% - 4px)/3);
+    background-color: #E3DAC9;
+    float: left;
+    height: 38px;
+    line-height: 38px;
+    text-align: center;
+	border-left: 2px solid;
+}
+
+#navinput {
+    height: 620px;
+    background-color: #E3DAC9;
+    width: calc(100%-5px);
+    float:left;
+	padding-left: 5px;
 }

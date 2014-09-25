@@ -5,8 +5,8 @@ TODO:
 - Convert large numbers to run off Base64 Maths
 - Buttons and options to toggle clicking, critical and click speed
 - Factor in desired Hero Souls to calculations
-- Add in Efficiencies for Achievements and possibly Ancients
-- Add in Ancient Info
+- Add in Efficiencies for Achievements, Ancients and possibly ascending
+- Add in Ancient Info and their effects
 - Add in Zone information to find Gold per Second when Idle
 - Add in Max DPS using Skills
 - Timer that recalculates every specified time (config)
@@ -299,7 +299,8 @@ function calculateHeroData() { //Calculates levelMultiplier, nextCost, currentDP
 	var loopFlag = true;
 	while (loopFlag) {
 		heroDPS = 0;
-		for (i = 0; i < heroKeys.length; i++) {
+        for (i = 0; i < heroKeys.length; i++) {
+        
 			heroData[i]["currentDPS"] = heroData[i]["level"] * heroData[i]["baseDPS"] * achievementMultiplier * darkRitualMultiplier * allHeroMultiplier * heroSoulsMultiplier * heroData[i]["levelMultiplier"] * (1 + (heroData[i]["gilded"] * (0.5 + (0.02 * ancientData[25]["level"]))));
 			for (j = 0; j < heroData[i]["upgrades"].length; j++) {
 				var upgradeDetails = upgradeData[heroData[i]["upgrades"][j]];
@@ -583,6 +584,7 @@ function recalculate() { //Will be called initially to calculate everything and 
 	calculateClickingInfo();
 	calculateAllEfficiencies();
 	updateEfficiencyData();
+    
 }
 
 function init() { //Init Phase
@@ -666,7 +668,9 @@ function userSaveButton() {
 	updateUserSave();
 	fillInData();
 	recalculate();
+    
 	updateDOM();
+   
 }
 
 function numberWithCommas(number) { //Converts 1234567 into 1,234,567. Also is compatible with decimals: 1234567.8910 -> 1,234,567.8910
@@ -707,67 +711,10 @@ function saveSaveData() { //Will save the data to local storage
 	}
 }
 
-function updateEfficiencyTable() {
-	var initPos = 0;
-	var loopcount = 0;
-	var loopflag = true;
-	while (loopflag) {
-		if (efficiencyData[loopcount][1] == 0) {
-			efficiencyData[loopcount][1] = "N/A"
-		} else {
-			initPos = loopcount;
-			loopflag = false;
-		}
-		loopcount = loopcount + 1;
-	}
-	for (i = 1; i <= 6; i++) {
-		var str = "r" + Math.ceil(i / 2) + "c" + (-1 * (i % 2) + 2).toString();
-		if ((-1 * (i % 2) + 2) == 1) {
-			if (efficiencyData[Math.ceil(i / 2) + initPos - 1][0].split(",")[0] == "Hero") {
-				document.getElementById(str).innerHTML = heroData[Number(efficiencyData[Math.ceil(i / 2) + initPos - 1][0].split(",")[2])]["name"] + " " + efficiencyData[Math.ceil(i / 2) + initPos - 1][0].split(",")[1] + "x Multiplier";
-			} else {
-				document.getElementById(str).innerHTML = upgradeData[efficiencyData[Math.ceil(i / 2) + initPos - 1][0].split(",")[1]]["name"];
-			}
-		} else {
-			document.getElementById(str).innerHTML = formatNumber(Number(efficiencyData[Math.ceil(i / 2) + initPos - 1][1]));
-		}
-	}
-}
-
-function updateDOM() { //Will put calculated elements onto their respective DOM elements
-	updateEfficiencyTable();
-}
-
-function addEventListeners() { //Everything that requires waiting for user input goes here
-	document.getElementById("calculateSaveData").onclick = userSaveButton;
-	document.getElementById("saveAll").onclick = saveSaveData;
-}
-
-function debugLogger() {
-	//console.log(heroData);
-	//console.log(achievData);
-	//console.log(upgradeData);
-	//console.log(ancientData);
-	//console.log(efficiencyData);
-	//console.log(parsedSaveData);
-	//console.log(chdata);
-}
-
 function purchase(num) {
 	var purchase = efficiencyData[num][0].split(",");
 	if (purchase[0] == "Hero") {
-		var heroA = heroData[Number(purchase[2])];
-		if (Number(purchase[1]) == 1) {
-			heroData[Number(purchase[2])]["level"] += 1;
-		} else if (Number(purchase[1]) == 4) {
-			if (heroData[Number(purchase[2])]["level"] < 200) {
-				heroData[Number(purchase[2])]["level"] = 200;
-			} else {
-				heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"]+1) / 25) * 25;
-			}
-		} else {
-			heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 1000) * 1000;
-		}
+		heroData[Number(purchase[2])]["level"] = getNextPurchaseLevel(num);
 	} else {
 		upgradeData[Number(purchase[1])]["owned"] = true;
 		var heroID = upgradeData[Number(purchase[1])]["heroID"] - 1;
@@ -777,6 +724,26 @@ function purchase(num) {
 	}
 	recalculate();
 	updateDOM();
+}
+
+function purchaseLevel(num) {
+	var purchase = efficiencyData[num][0].split(",");
+	if (purchase[0] == "Hero") {
+		var heroA = heroData[Number(purchase[2])];
+		if (Number(purchase[1]) == 1) {
+			return heroData[Number(purchase[2])]["level"] + 1;
+		} else if (Number(purchase[1]) == 4) {
+			if (heroData[Number(purchase[2])]["level"] < 200) {
+				return 200;
+			} else {
+				return Math.ceil((heroData[Number(purchase[2])]["level"]+1) / 25) * 25;
+			}
+		} else {
+			return Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 1000) * 1000;
+		}
+	} else {
+		return "N/A";
+	}
 }
 
 function purchaseNextN(n) {
@@ -802,10 +769,138 @@ function purchaseNextN(n) {
 				heroData[heroID]["level"] = upgradeData[Number(purchase[1])]["level"]
 			}
 		}
-		console.log(purchase);
 		recalculate();
 	}
 	updateDOM();
+}
+
+function getNextPurchaseLevel(num) {
+	if (num == 0) {
+		var purchaseIsSame = true;
+		var initPurchase = efficiencyData[0][0].split(",");
+		if (initPurchase[0] == "Upgrade") {
+			return "N/A";
+		}
+		var newLevel = 0;
+		var heroLevel = heroData[Number(initPurchase[2])]["level"];
+		while (purchaseIsSame) {
+			var purchase = efficiencyData[0][0].split(",");
+			if (purchase[2] == initPurchase[2]) {
+				var heroA = heroData[Number(purchase[2])];
+				if (Number(purchase[1]) == 1) {
+					heroData[Number(purchase[2])]["level"] += 1;
+				} else if (Number(purchase[1]) == 4) {
+					if (heroData[Number(purchase[2])]["level"] < 200) {
+						heroData[Number(purchase[2])]["level"] = 200;
+					} else {
+						heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"]+1) / 25) * 25;
+					}
+				} else {
+					heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 1000) * 1000;
+				}
+				newLevel = heroData[Number(purchase[2])]["level"];
+				recalculate();
+			} else {
+				purchaseIsSame = false;
+			}
+		}
+		heroData[Number(initPurchase[2])]["level"] = heroLevel;
+		recalculate();
+		return newLevel;
+	} else {
+		return purchaseLevel(num);
+	}
+}
+
+function updateEfficiencyTable() {
+	var initPos = 0;
+	var loopcount = 0;
+	var loopflag = true;
+	while (loopflag) {
+		if (efficiencyData[loopcount][1] == 0) {
+			efficiencyData[loopcount][1] = "N/A"
+		} else {
+			initPos = loopcount;
+			loopflag = false;
+		}
+		loopcount = loopcount + 1;
+	}
+	for (z = 1; z <= 6; z++) {
+		var str = "r" + Math.ceil(z / 2) + "c" + (-1 * (z % 2) + 2).toString();
+		if ((-1 * (z % 2) + 2) == 1) {
+			if (efficiencyData[Math.ceil(z / 2) + initPos - 1][0].split(",")[0] == "Hero") {
+				document.getElementById(str).innerHTML = heroData[Number(efficiencyData[Math.ceil(z / 2) + initPos - 1][0].split(",")[2])]["name"]; // + " " + efficiencyData[Math.ceil(i / 2) + initPos - 1][0].split(",")[1] + "x Multiplier";
+			} else {
+				document.getElementById(str).innerHTML = upgradeData[efficiencyData[Math.ceil(z / 2) + initPos - 1][0].split(",")[1]]["name"];
+			}
+		} else {
+			document.getElementById(str).innerHTML = getNextPurchaseLevel(Math.ceil(z / 2) + initPos - 1); //formatNumber(Number(efficiencyData[Math.ceil(i / 2) + initPos - 1][1]));
+		}
+	}
+}
+
+function graph(){
+	google.load('visualization', '1.0', {
+		packages: ['corechart'],
+		callback: function drawChart() {
+			var data = new google.visualization.arrayToDataTable([
+				["Hero","DPS"],
+				["Cid", heroData[0]["currentClickDamage"] * clickSpeed],
+				["Treebeast",heroData[1]["currentDPS"]],
+				["Ivan",heroData[2]["currentDPS"]],
+				["Brittany",heroData[3]["currentDPS"]],
+				["The Wandering Fisherman",heroData[4]["currentDPS"]],
+				["Betty",heroData[5]["currentDPS"]],
+				["The Masked Samurai",heroData[6]["currentDPS"]],
+				["Leon",heroData[7]["currentDPS"]],
+				["The Great Forest Seer",heroData[8]["currentDPS"]],
+				["Alexa",heroData[9]["currentDPS"]],
+				["Natalia",heroData[10]["currentDPS"]],
+				["Mercedes",heroData[11]["currentDPS"]],
+				["Bobby",heroData[12]["currentDPS"]],
+				["Broyle",heroData[13]["currentDPS"]],
+				["Sir George II",heroData[14]["currentDPS"]],
+				["King Midas",heroData[15]["currentDPS"]],
+				["Referi Jerator",heroData[16]["currentDPS"]],
+				["Abbadon",heroData[17]["currentDPS"]],
+				["Ma Zhu",heroData[18]["currentDPS"]],
+				["Amenhoep",heroData[19]["currentDPS"]],
+				["Beastlord",heroData[20]["currentDPS"]],
+				["Athena",heroData[21]["currentDPS"]],
+				["Aphrodite",heroData[22]["currentDPS"]],
+				["Shinatobe",heroData[23]["currentDPS"]],
+				["Grant",heroData[24]["currentDPS"]],
+				["Frostleaf",heroData[25]["currentDPS"]]
+				]);
+			var options = {
+				title: 'Pie Chart of Hero DPS',
+				backgroundColor: '#E3DAC9',
+				chartArea:{left:10,top:20,width:'100%',height:'100%'}
+			};
+			var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+			chart.draw(data, options);
+		}
+    })  
+}
+
+function updateDOM() { //Will put calculated elements onto their respective DOM elements
+	updateEfficiencyTable();
+   graph();
+}
+
+function addEventListeners() { //Everything that requires waiting for user input goes here
+	document.getElementById("calculateSaveData").onclick = userSaveButton;
+	document.getElementById("saveAll").onclick = saveSaveData;
+}
+
+function debugLogger() {
+	//console.log(heroData);
+	//console.log(achievData);
+	//console.log(upgradeData);
+	//console.log(ancientData);
+	//console.log(efficiencyData);
+	//console.log(parsedSaveData);
+	//console.log(chdata);
 }
 
 function postInit() { //PostInit Phase

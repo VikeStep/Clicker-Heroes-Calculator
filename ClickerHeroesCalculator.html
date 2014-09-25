@@ -1,41 +1,93 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="ClickerHeroesCalculator.css">
-		<script type="text/javascript" src="ClickerHeroesCalculator.json"></script>
+		<link rel="stylesheet" type="text/css" href="ClickerHeroesCalculator.css">
+		<script type="text/javascript" src="ClickerHeroesCalculator.json"></script>    
     </head>
+	
     <body>
-        <h1>Clicker Heroes Calculator</h1>
-        <p>Made by VikeStep and stennett</p>
-		<input id="saveAll" type="button" value="Save your Stuff!"></input>
-		<p>Enter your save data below and press Calculate</p>
-		<textarea id="savedata" rows="4" cols="50"></textarea>
-		<br/>
-		<input id="calculateSaveData" type="button" value="Calcuate"></input>
-		<p>Top 3 Most Efficient Purchases</p>
-		<table>
-			<col width = "300px" />
-			<tr>
-				<td>Purchase</td>
-				<td>Efficiency</td>
-			</tr>
-			<tr>
-				<td id="r1c1"></td>
-				<td id="r1c2"></td>
-				<td><input id="purchase1" type="button" value="Purchase" onclick=purchase(0)></input></td>
-			</tr>
-			<tr>
-				<td id="r2c1"></td>
-				<td id="r2c2"></td>
-				<td><input id="purchase2" type="button" value="Purchase" onclick=purchase(1)></input></td>
-			</tr>
-			<tr>
-				<td id="r3c1"></td>
-				<td id="r3c2"></td>
-				<td><input id="purchase3" type="button" value="Purchase" onclick=purchase(2)></input></td>
-			</tr>
-		</table>
+		<div id="main">
+			<div id="header">
+				<h1>Clicker Heroes Calculator</h1>
+				<p>Made by VikeStep and stennett</p>
+			</div>
+			<div id="out">
+				<div id="infoheader">
+					Info
+				</div>
+				<div id="outdata1">
+					<div id="efficiencies">
+						<table>
+							<col width = "300px" />
+							<tr>
+								<td>Purchase</td>
+								<td>Level</td>
+							</tr>
+							<tr>
+								<td id="r1c1"></td>
+								<td id="r1c2"></td>
+								<td><input id="purchase1" type="button" value="Purchase" onclick=purchase(0)></input></td>
+							</tr>
+							<tr>
+								<td id="r2c1"></td>
+								<td id="r2c2"></td>
+								<td><input id="purchase2" type="button" value="Purchase" onclick=purchase(1)></input></td>
+							</tr>
+							<tr>
+								<td id="r3c1"></td>
+								<td id="r3c2"></td>
+								<td><input id="purchase3" type="button" value="Purchase" onclick=purchase(2)></input></td>
+							</tr>
+						</table>
+					</div>
+					<div id="generaldata">
+						Stuff like total DPS, multipliers here
+					</div>
+				</div>
+				<div id="outdata2">
+					<div id="piechart">
+						<div id="piechart" style="width: 100%; height: 100%;"></div>
+					</div>
+					<div id="herodata">
+						Data for each hero here with a scroll bar for this section
+					</div>
+				</div>
+			</div>
+			<div id="in">
+				<div id="savediv">
+					Enter Save Data:<input type="text" id="savedata" name="savedata" line-height=38px />
+				</div>
+				<div id="indata1">
+					<div id="options">
+						Enable Clicking (Radio Button)<br/>
+						Enable Critical (Radio Button)<br/>
+						Click Speed (Text Input)
+					</div>
+					<div id="buttons">
+						<input id="calculateSaveData" type="button" value="Calcuate"></input><br/>
+						<input id="saveAll" type="button" value="Save your Stuff!"></input>
+					</div>
+				</div>
+				<div id="indata2">
+					<div id="navbar">
+						<div id="nav1">
+							Heroes
+						</div>
+						<div id="nav2">
+							Ancients
+						</div>
+						<div id="nav3">
+							Achievements
+						</div>
+					</div>
+					<div id="navinput">
+						Content in here changes depending on which tab is selected in the above nav bar. In here is a list of either all heroes, ancients or achievements and each can be toggle or have their levels/gilds changed
+					</div>
+				</div>
+			</div>
+		</div>
 		<!--Do not put anything else below this comment-->
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
         <script type="text/javascript">
 			function downloadJSAtOnload() {
 				var element = document.createElement("script");
