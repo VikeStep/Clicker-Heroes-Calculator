@@ -383,10 +383,10 @@ function calculateClickingInfo() {
 	criticalClickDamage = ((criticalClickChance * criticalClickMultiplier * clickDamage) + ((100 - criticalClickChance) * clickDamage)) / 100;
 	cid1LevelCriticalDamageChange = (criticalClickDamage * cid1LevelDamageChange) / clickDamage; //Simplified Formula for Damage Difference
 	
-	clickDPS = clickDamage * clickSpeed;
-	cidNextClickDPSChange = clickSpeed * cid1LevelDamageChange;
-	criticalClickDPS = criticalClickDamage * clickSpeed;
-	cidNextCriticalClickDPSChange = cid1LevelCriticalDamageChange * clickSpeed;
+	clickDPS = clickDamage * clickSpeed * enableClicking;
+	cidNextClickDPSChange = clickSpeed * cid1LevelDamageChange * enableClicking;
+	criticalClickDPS = criticalClickDamage * clickSpeed * enableClicking;
+	cidNextCriticalClickDPSChange = cid1LevelCriticalDamageChange * clickSpeed * enableClicking;
 	
 	if (enableClicking == true) {
 		if (enableCritical == true) {
@@ -531,7 +531,7 @@ function calculateAllEfficiencies() {
 					} else {
 						CidClickDamageGain = 0;
 					}
-					upgradeData[i]["DPSChange"] = 0.01 * (1 + (ancientData[16]["level"] * 0.2)) * (heroData[0]["currentClickDamage"] + CidClickDamageGain) * Number(upgradeData[i]["upgradeParams"][0]) * clickSpeed
+					upgradeData[i]["DPSChange"] = 0.01 * (1 + (ancientData[16]["level"] * 0.2)) * (heroData[0]["currentClickDamage"] + CidClickDamageGain) * Number(upgradeData[i]["upgradeParams"][0]) * clickSpeed * enableClicking;
 					break;
 				
 				case "upgradeGoldFoundPercent": //Assuming DPS and GPS are directly proportional this will work
@@ -662,15 +662,33 @@ function updateUserSave() { //after decoding a save this will put that decoded i
 	}
 }
 
-function userSaveButton() {
+function getOptions() {
+	enableClicking = document.getElementById("enableClicking").checked;
+	//enableCritical = document.getElementById("enableCritical").checked;
+	clickSpeed = document.getElementById("clickSpeed").value;
+	if (isNaN(clickSpeed)) {
+		clickSpeed = 0;
+	} else {
+		clickSpeed = Number(clickSpeed);
+	}
+}
+
+function updateAll() {
 	saveData = document.getElementById("savedata").value.toString();
-	decodeSave();
-	updateUserSave();
-	fillInData();
+	if (saveData != "") {
+		decodeSave();
+		updateUserSave();
+		fillInData();
+	}
+	getOptions();
 	recalculate();
-    
 	updateDOM();
-   
+}
+
+function updateValues() {
+	getOptions();
+	recalculate();
+	updateDOM();
 }
 
 function numberWithCommas(number) { //Converts 1234567 into 1,234,567. Also is compatible with decimals: 1234567.8910 -> 1,234,567.8910
@@ -885,12 +903,13 @@ function graph(){
 
 function updateDOM() { //Will put calculated elements onto their respective DOM elements
 	updateEfficiencyTable();
-   graph();
+	graph();
 }
 
 function addEventListeners() { //Everything that requires waiting for user input goes here
-	document.getElementById("calculateSaveData").onclick = userSaveButton;
+	document.getElementById("updateSaveData").onclick = updateAll;
 	document.getElementById("saveAll").onclick = saveSaveData;
+	document.getElementById("updateValues").onclick = updateValues;
 }
 
 function debugLogger() {

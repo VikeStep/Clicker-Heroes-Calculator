@@ -59,13 +59,14 @@
 				</div>
 				<div id="indata1">
 					<div id="options">
-						Enable Clicking (Radio Button)<br/>
-						Enable Critical (Radio Button)<br/>
-						Click Speed (Text Input)
+						Enable Clicking <input type="checkbox" name="enableClicking" id="enableClicking"></input><br/>
+						<!--Enable Critical <input type="radio" name="enableCritical" id="enableCritical"></input><br/> Disabled Until it Works-->
+						Click Speed: <input type="text" id="clickSpeed" name="clickSpeed" />
 					</div>
 					<div id="buttons">
-						<input id="calculateSaveData" type="button" value="Calcuate"></input><br/>
-						<input id="saveAll" type="button" value="Save your Stuff!"></input>
+						<input id="updateSaveData" type="button" value="Use Save Data"></input><br/>
+						<input id="saveAll" type="button" value="Save Your Data"></input>
+						<input id="updateValues" type="button" value="Re-Calculate"></input>
 					</div>
 				</div>
 				<div id="indata2">
@@ -81,7 +82,7 @@
 						</div>
 					</div>
 					<div id="navinput">
-						Content in here changes depending on which tab is selected in the above nav bar. In here is a list of either all heroes, ancients or achievements and each can be toggle or have their levels/gilds changed
+						Content in here changes depending on which tab is selected in the above nav bar. In here is a list of either all heroes, ancients or achievements and each can be toggled or have their levels/gilds changed
 					</div>
 				</div>
 			</div>
