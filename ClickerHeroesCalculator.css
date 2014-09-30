@@ -20,17 +20,20 @@ p {
     float: right;
     width: calc(60% - 3px);
     height: 850px;
-	border: 2px solid;
-	border-left: 1px solid;
+    border: 2px solid;
+    border-left: 1px solid;
 }
 
+
+
+
 #in {
-    background-color:Black;   
+    background-color:Black;
     float: left;
     width: calc(40% - 3px);
     height: 850px;
-	border: 2px solid;
-	border-right: 1px solid
+    border: 2px solid;
+    border-right: 1px solid
 }
 
 #infoheader {
@@ -38,7 +41,7 @@ p {
     text-align: center;
     height: 38px;
     line-height: 38px;
-	border-bottom: 2px solid;
+    border-bottom: 2px solid;
 }
 
 #efficiencies {
@@ -46,9 +49,9 @@ p {
     height: 404px;
     background-color: #E3DAC9;
     width: calc(50% - 6px);
-	border-bottom: 1px solid;
-	border-right: 1px solid;
-	padding-left: 5px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    padding-left: 5px;
 }
 
 #generaldata {
@@ -56,9 +59,9 @@ p {
     height: 404px;
     background-color: #E3DAC9;
     width: calc(50% - 6px);
-	border-bottom: 1px solid;
-	border-left: 1px solid;
-	padding-left: 5px;
+    border-bottom: 1px solid;
+    border-left: 1px solid;
+    padding-left: 5px;
 }
 
 #piechart {
@@ -66,8 +69,8 @@ p {
     height: 404px;
     background-color: #E3DAC9;
     width: calc(50% - 1px);
-	border-right: 1px solid;
-	border-top: 1px solid;
+    border-right: 1px solid;
+    border-top: 1px solid;
 }
 
 #herodata {
@@ -75,17 +78,17 @@ p {
     height: 404px;
     background-color: #E3DAC9;
     width: calc(50% - 6px);
-	border-left: 1px solid;
-	border-top: 1px solid;
-	padding-left: 5px;
+    border-left: 1px solid;
+    border-top: 1px solid;
+    padding-left: 5px;
 }
 
 #savediv {
     background-color: #E3DAC9;
     height: 38px;
-	line-height: 38px;
-	border-bottom: 2px solid;
-	padding-left: 5px;
+    line-height: 38px;
+    border-bottom: 2px solid;
+    padding-left: 5px;
 }
 
 #options {
@@ -93,9 +96,9 @@ p {
     height: 148px;
     background-color: #E3DAC9;
     width: calc(75% - 6px);
-	border-bottom: 2px solid;
-	border-right: 1px solid;
-	padding-left: 5px;
+    border-bottom: 2px solid;
+    border-right: 1px solid;
+    padding-left: 5px;
 }
 
 #buttons {
@@ -103,9 +106,9 @@ p {
     height: 148px;
     background-color: #E3DAC9;
     width: calc(25% - 6px);
-	border-bottom: 2px solid;
-	border-left: 1px solid;
-	padding-left: 5px;
+    border-bottom: 2px solid;
+    border-left: 1px solid;
+    padding-left: 5px;
 }
 
 #navbar {
@@ -113,7 +116,7 @@ p {
     background-color: #E3DAC9;
     width: 100%;
     float:left;
-	border-bottom: 2px solid;
+    border-bottom: 2px solid;
 }
 
 #nav1 {
@@ -123,7 +126,7 @@ p {
     height: 38px;
     line-height: 38px;
     text-align: center;
-	border-right: 2px solid;
+    border-right: 2px solid;
 }
 
 #nav2 {
@@ -142,7 +145,7 @@ p {
     height: 38px;
     line-height: 38px;
     text-align: center;
-	border-left: 2px solid;
+    border-left: 2px solid;
 }
 
 #navinput {
@@ -150,5 +153,12 @@ p {
     background-color: #E3DAC9;
     width: calc(100%-5px);
     float:left;
-	padding-left: 5px;
+    padding-left: 5px;
+}
+#heroTable table, #heroTable td, #heroTable th {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+#heroTable th, #heroTable td {
+    padding: 15px;
 }
