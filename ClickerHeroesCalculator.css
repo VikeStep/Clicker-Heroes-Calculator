@@ -12,11 +12,11 @@ p {
 
 #header {
     color: white;
-    text-align:center;
+    text-align: center;
 }
 
 #out {
-    background-color:Black;
+    background-color: Black;
     float: right;
     width: calc(60% - 3px);
     height: 850px;
@@ -24,11 +24,8 @@ p {
     border-left: 1px solid;
 }
 
-
-
-
 #in {
-    background-color:Black;
+    background-color: Black;
     float: left;
     width: calc(40% - 3px);
     height: 850px;
@@ -45,7 +42,7 @@ p {
 }
 
 #efficiencies {
-    float:left;
+    float: left;
     height: 404px;
     background-color: #E3DAC9;
     width: calc(50% - 6px);
@@ -64,8 +61,8 @@ p {
     padding-left: 5px;
 }
 
-#piechart {
-    float:left;
+#piechartdiv {
+    float: left;
     height: 404px;
     background-color: #E3DAC9;
     width: calc(50% - 1px);
@@ -92,7 +89,7 @@ p {
 }
 
 #options {
-    float:left;
+    float: left;
     height: 148px;
     background-color: #E3DAC9;
     width: calc(75% - 6px);
@@ -115,12 +112,13 @@ p {
     height: 38px;
     background-color: #E3DAC9;
     width: 100%;
-    float:left;
+    float: left;
     border-bottom: 2px solid;
 }
 
+/*
 #nav1 {
-    width: calc((100% - 4px)/3);
+    width: calc((100% - 4px) / 3);
     background-color: #E3DAC9;
     float: left;
     height: 38px;
@@ -130,7 +128,7 @@ p {
 }
 
 #nav2 {
-    width: calc((100% - 4px)/3);
+    width: calc((100% - 4px) / 3);
     background-color: #E3DAC9;
     float: left;
     height: 38px;
@@ -139,7 +137,7 @@ p {
 }
 
 #nav3 {
-    width: calc((100% - 4px)/3);
+    width: calc((100% - 4px) / 3);
     background-color: #E3DAC9;
     float: left;
     height: 38px;
@@ -147,18 +145,22 @@ p {
     text-align: center;
     border-left: 2px solid;
 }
-
+*/
 #navinput {
-    height: 620px;
     background-color: #E3DAC9;
-    width: calc(100%-5px);
-    float:left;
-    padding-left: 5px;
+    height: 620px;
+    width: 100%;
+    float: left;
+    overflow-y: auto;
 }
+
 #heroTable table, #heroTable td, #heroTable th {
     border: 1px solid black;
     border-collapse: collapse;
+    width: 100%
 }
+
 #heroTable th, #heroTable td {
-    padding: 15px;
+    align-content: center;
+    width: 25%;
 }

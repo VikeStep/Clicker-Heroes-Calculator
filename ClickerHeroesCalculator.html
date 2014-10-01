@@ -2,7 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="ClickerHeroesCalculator.css">
-    <script type="text/javascript" src="ClickerHeroesCalculator.json"></script>
+    <script type="text/javascript" src="ClickerHeroesJSON.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 </head>
 
@@ -10,6 +10,7 @@
 <div id="main">
     <div id="header">
         <h1>Clicker Heroes Calculator</h1>
+
         <p>Made by VikeStep and stennett</p>
     </div>
     <div id="out">
@@ -19,25 +20,24 @@
         <div id="outdata1">
             <div id="efficiencies">
                 <table>
-                    <col width = "300px" />
                     <tr>
-                        <td>Purchase</td>
+                        <td style="width:300px;">Purchase</td>
                         <td>Level</td>
                     </tr>
                     <tr>
                         <td id="r1c1"></td>
                         <td id="r1c2"></td>
-                        <td><input id="purchase1" type="button" value="Purchase" onclick=purchase(0)></input></td>
+                        <td><input id="purchase1" type="button" value="Purchase" onclick="purchase(0)"/></td>
                     </tr>
                     <tr>
                         <td id="r2c1"></td>
                         <td id="r2c2"></td>
-                        <td><input id="purchase2" type="button" value="Purchase" onclick=purchase(1)></input></td>
+                        <td><input id="purchase2" type="button" value="Purchase" onclick="purchase(1)"/></td>
                     </tr>
                     <tr>
                         <td id="r3c1"></td>
                         <td id="r3c2"></td>
-                        <td><input id="purchase3" type="button" value="Purchase" onclick=purchase(2)></input></td>
+                        <td><input id="purchase3" type="button" value="Purchase" onclick="purchase(2)"/></td>
                     </tr>
                 </table>
             </div>
@@ -46,7 +46,7 @@
             </div>
         </div>
         <div id="outdata2">
-            <div id="piechart">
+            <div id="piechartdiv">
                 <div id="piechart" style="width: 100%; height: 100%;"></div>
             </div>
             <div id="herodata">
@@ -56,18 +56,19 @@
     </div>
     <div id="in">
         <div id="savediv">
-            Enter Save Data:<input type="text" id="savedata" name="savedata" line-height=38px />
+            <label for="savedata">Enter Save Data:</label><input type="text" id="savedata" name="savedata"/>
         </div>
         <div id="indata1">
             <div id="options">
-                Enable Clicking <input type="checkbox" name="enableClicking" id="enableClicking"></input><br/>
+                <label for="enableClicking">Enable Clicking </label><input type="checkbox" name="enableClicking"
+                                                                           id="enableClicking"/><br/>
                 <!--Enable Critical <input type="radio" name="enableCritical" id="enableCritical"></input><br/> Disabled Until it Works-->
-                Click Speed: <input type="text" id="clickSpeed" name="clickSpeed" />
+                <label for="clickSpeed">Click Speed: </label><input type="text" id="clickSpeed" name="clickSpeed"/>
             </div>
             <div id="buttons">
-                <input id="updateSaveData" type="button" value="Use Save Data"></input><br/>
-                <input id="saveAll" type="button" value="Save Your Data"></input>
-                <input id="updateValues" type="button" value="Re-Calculate"></input>
+                <input id="updateSaveData" type="button" value="Use Save Data"/><br/>
+                <input id="saveAll" type="button" value="Save Your Data"/>
+                <input id="updateValues" type="button" value="Re-Calculate"/>
             </div>
         </div>
         <div id="indata2">
@@ -88,26 +89,67 @@
             </div>
             <div class=navContainer>
 
-                <div class=navItem id="navinput" data-link="first" style="width: 99.4%; height: 100%; align:center;">
+                <div class=navItem id="navinput" data-link="first">
                     <div id="heroTable">
-                        <table style="align:center;">
-                            <tr><td><a><img src="heroSprites/heroes/cid.png" alt="Cid, the Helpful Adventurer"></a></td><td><a><img src="heroSprites/heroes/treebeast.png" alt="Treebeast"></a></td><td><a><img src="heroSprites/heroes/ivan.png" alt="Ivan, the Drunken Brawler"></a></td><td><a><img src="heroSprites/heroes/brittany.png" alt="Brittany, Beach Princess"></a></td></tr>
-                            <tr><td><a><img src="heroSprites/heroes/fisherman.png" alt="The Wandering Fisherman"></a></td><td><a><img src="heroSprites/heroes/betty.png" alt="Betty Clicker"></a></td><td><a><img src="heroSprites/heroes/samurai.png" alt="The Masked Samurai"></a></td><td><a><img src="heroSprites/heroes/leon.png" alt="Leon"></a></td></tr>
-                            <tr><td><a><img src="heroSprites/heroes/forestseer.png" alt="The Great Forest Seer"></a></td><td><a><img src="heroSprites/heroes/alexa.png" alt="Alexa, Assassin"></a></td><td><a><img src="heroSprites/heroes/natalia.png" alt="Natalia, Ice Princess"></a></td><td><a><img src="heroSprites/heroes/mercedes.png" alt="Mercedes, Duchess of Blades"></a></td></tr>
-                            <tr><td><a><img src="heroSprites/heroes/bobby.png" alt="Bobby, Bounty Hunter"></a></td><td><a><img src="heroSprites/heroes/broyle.png" alt="Broyle Lindeoven, Fire Mage"></a></td><td><a><img src="heroSprites/heroes/george.png" alt="Sir George II, King's Guard"></a></td><td><a><img src="heroSprites/heroes/kindmidas.png" alt="King Midas"></a></td></tr>
-                            <tr><td>referi jerator</td><td>abaddon</td><td>ma zhu</td><td>amenhotep</td></tr>
-                            <tr><td>beastlord</td><td>athena</td><td>aphrodite</td><td>shinatobe</td></tr>
-                            <tr ><td>grant</td><td>frostleaf</td></tr>
+                        <table style="text-align:center;">
+                            <tr>
+                                <td><a><img src="heroSprites/heroes/cid.PNG" alt="Cid, the Helpful Adventurer"></a></td>
+                                <td><a><img src="heroSprites/heroes/Treebeast.PNG" alt="Treebeast"></a></td>
+                                <td><a><img src="heroSprites/heroes/ivan.PNG" alt="Ivan, the Drunken Brawler"></a></td>
+                                <td><a><img src="heroSprites/heroes/Brittany.PNG" alt="Brittany, Beach Princess"></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a><img src="heroSprites/heroes/fisherman.PNG" alt="The Wandering Fisherman"></a>
+                                </td>
+                                <td><a><img src="heroSprites/heroes/betty.PNG" alt="Betty Clicker"></a></td>
+                                <td><a><img src="heroSprites/heroes/samurai.PNG" alt="The Masked Samurai"></a></td>
+                                <td><a><img src="heroSprites/heroes/Leon.PNG" alt="Leon"></a></td>
+                            </tr>
+                            <tr>
+                                <td><a><img src="heroSprites/heroes/forestseer.PNG" alt="The Great Forest Seer"></a>
+                                </td>
+                                <td><a><img src="heroSprites/heroes/alexa.PNG" alt="Alexa, Assassin"></a></td>
+                                <td><a><img src="heroSprites/heroes/natalia.PNG" alt="Natalia, Ice Princess"></a></td>
+                                <td><a><img src="heroSprites/heroes/mercedes.PNG" alt="Mercedes, Duchess of Blades"></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><a><img src="heroSprites/heroes/bobby.PNG" alt="Bobby, Bounty Hunter"></a></td>
+                                <td><a><img src="heroSprites/heroes/Broyle.PNG" alt="Broyle Lindeoven, Fire Mage"></a>
+                                </td>
+                                <td><a><img src="heroSprites/heroes/george.PNG" alt="Sir George II, King's Guard"></a>
+                                </td>
+                                <td><a><img src="heroSprites/heroes/kingmidas.PNG" alt="King Midas"></a></td>
+                            </tr>
+                            <tr>
+                                <td><a><img src="heroSprites/heroes/referi.PNG" alt="Referi Jerator, Ice Wizard"></a>
+                                </td>
+                                <td><a><img src="heroSprites/heroes/abbadon.PNG" alt="Abbadon"></a></td>
+                                <td><a><img src="heroSprites/heroes/mazhu.PNG" alt="Ma Zhu"></a></td>
+                                <td><a><img src="heroSprites/heroes/amenhotep.PNG" alt="Amenhotep"></a></td>
+                            </tr>
+                            <tr>
+                                <td><a><img src="heroSprites/heroes/beastlord.PNG" alt="Beastlord"></a></td>
+                                <td><a><img src="heroSprites/heroes/athena.PNG" alt="Athena, Goddess of War"></a></td>
+                                <td><a><img src="heroSprites/heroes/aphrodite.PNG" alt="Aphrodite, Goddess of Love"></a>
+                                </td>
+                                <td><a><img src="heroSprites/heroes/shinatobe.PNG" alt="Shinatobe, Wind Deity"></a></td>
+                            </tr>
+                            <tr>
+                                <td><a><img src="heroSprites/heroes/grant.PNG" alt="Grant, the General"></a></td>
+                                <td><a><img src="heroSprites/heroes/frostleaf.PNG" alt="Frostleaf"></a></td>
+                            </tr>
                         </table>
                     </div>
                 </div>
-                <div class=navItem id="navinput" data-link="second"  style="width: 99.4%; height: 100%;">
+                <div class=navItem id="navinput" data-link="second" style="width: 99.4%; height: 100%;">
                     Ancients Nav!
                 </div>
-                <div class=navItem id="navinput" data-link="third"  style="width: 99.4%; height: 100%;">
+                <div class=navItem id="navinput" data-link="third" style="width: 99.4%; height: 100%;">
                     Achievements nav!
                 </div>
-                <div class=navItem id="navinput" data-link="fourth"  style="width: 99.4%; height: 100%;">
+                <div class=navItem id="navinput" data-link="fourth" style="width: 99.4%; height: 100%;">
                     FAQ nav!
                 </div>
             </div>
@@ -117,15 +159,13 @@
                 $('.navItem:first').show();
 
 
-                $('.link').click(function() {
+                $('.link').click(function () {
                     $('.navItem').hide();
                     $('.navItem[data-link=' + $(this).data('link') + ']').fadeIn({
                         width: '200px'
                     }, 300);
                 });
             </script>
-
-
         </div>
     </div>
 </div>

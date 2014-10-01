@@ -17,7 +17,6 @@
 
 //Initialising Global Variables
 var userSave = Object(); //Holds all current info - can possibly request off people for debugging purposes
-var localStorageSaveString = ""; //String version of userSave to keep in localStorage
 
 var impAch = chdata.achievements; //Imported Achievements etc...
 var impHer = chdata.heroes;
@@ -42,9 +41,6 @@ var totalDPS = 0;
 var heroDPS = 0;
 var heroSouls = 0;
 var currentHighestZone = 0;
-var ascensionCount = 0;
-var heroSoulsFromAscension = 0;
-var desiredHeroSouls = 0;
 var highestZoneReached = 0;
 var mostEfficientPurchase = "";
 
@@ -93,7 +89,7 @@ function calculateBaseDPS(cost, id) {	//The base DPS for a hero is calculated by
 }
 
 function calculateUpgradeCost(level, heroID) { //Will find cost of upgrade given the level needed for it and the Hero's ID
-    return heroData[heroID-1]["baseCost"] * [10,25,100,800,8000,40000,400000][[10,25,50,75,100,125,150].indexOf(level)];
+    return heroData[heroID - 1]["baseCost"] * [10, 25, 100, 800, 8000, 40000, 400000][[10, 25, 50, 75, 100, 125, 150].indexOf(level)];
 }
 
 function calculateLevelUpCost(heroID, level) {
@@ -158,8 +154,8 @@ function populateArrays() { //Populates the 4 main arrays with data from the jso
         upgradeData[i]["level"] = impUpgradeData.heroLevelRequired;
         upgradeData[i]["type"] = impUpgradeData.upgradeFunction;
         upgradeData[i]["upgradeParams"] = splitParams(impUpgradeData.upgradeParams);
-        upgradeData[i]["cost"] = calculateUpgradeCost(upgradeData[i]["level"],upgradeData[i]["heroID"])
-        heroData[upgradeData[i]["heroID"]-1]["upgrades"].push(i);
+        upgradeData[i]["cost"] = calculateUpgradeCost(upgradeData[i]["level"], upgradeData[i]["heroID"]);
+        heroData[upgradeData[i]["heroID"] - 1]["upgrades"].push(i);
         //Dynamic Data
         upgradeData[i]["owned"] = false;
         upgradeData[i]["totalCost"] = 0;
@@ -238,7 +234,7 @@ function calculateDarkRitualInfo() { //Will reverse engineer to find the amount 
         }
         darkRitualsUsed = closest[0];
         energizedDarkRitualsUsed = closest[1];
-        darkRitualMultiplier = Math.pow(1.05,darkRitualsUsed) * Math.pow(1.1,energizedDarkRitualsUsed);
+        darkRitualMultiplier = Math.pow(1.05, darkRitualsUsed) * Math.pow(1.1, energizedDarkRitualsUsed);
     } else {
         darkRitualsUsed = 0;
         energizedDarkRitualsUsed = 0;
@@ -249,17 +245,16 @@ function calculateDarkRitualInfo() { //Will reverse engineer to find the amount 
 
 function calculateGlobalMultipliers() { //Calculates global multipliers that cover all heroes. These come from achievements, upgrades and hero souls
     darkRitualsCalculated = false;
-    darkRitualMultiplier = 1;
     darkRitualsUsed = 0;
     energizedDarkRitualsUsed = 0;
     achievementMultiplier = 1;
-    for (i=0; i < achievKeys.length; i++) {
+    for (i = 0; i < achievKeys.length; i++) {
         if (achievData[i]["type"] == "addDps" && achievData[i]["owned"] == true) {
             achievementMultiplier = achievementMultiplier * (1 + (Number(achievData[i]["rewardParams"][0]) / 100));
         }
     }
     allHeroMultiplier = 1;
-    for (i=0; i < upgradeKeys.length; i++) {
+    for (i = 0; i < upgradeKeys.length; i++) {
         if (upgradeData[i]["type"] == "upgradeEveryonePercent" && upgradeData[i]["owned"] == true) {
             allHeroMultiplier = allHeroMultiplier * (1 + (Number(upgradeData[i]["upgradeParams"][0]) / 100));
         }
@@ -289,7 +284,7 @@ function calculateHeroData() { //Calculates levelMultiplier, nextCost, currentDP
             if (heroData[i]["level"] >= 1000) {
                 thousandCount = Math.floor(heroData[i]["level"] / 1000);
             }
-            heroData[i]["levelMultiplier"] = Math.pow(4,multiCount-thousandCount) * Math.pow(10,thousandCount);
+            heroData[i]["levelMultiplier"] = Math.pow(4, multiCount - thousandCount) * Math.pow(10, thousandCount);
         } else {
             heroData[i]["levelMultiplier"] = 1;
         }
@@ -429,7 +424,7 @@ function compareSecondColumn(a, b) {
 }
 
 function updateEfficiencyData() {
-    var smallest = ["NOTHING",0];
+    var smallest = ["NOTHING", 0];
     efficiencyData.length = 0;
     for (i = 1; i < heroKeys.length; i++) {
         efficiencyData.push(["Hero,1," + i, heroData[i]["efficiency1"]]);
@@ -437,11 +432,11 @@ function updateEfficiencyData() {
         efficiencyData.push(["Hero,10," + i, heroData[i]["efficiency10x"]]);
     }
     if (heroData[0]["efficiency1"] != 0 && heroData[0]["efficiency1"] != Infinity) {
-        efficiencyData.push(["Hero,1,0",heroData[0]["efficiency1"]]);
+        efficiencyData.push(["Hero,1,0", heroData[0]["efficiency1"]]);
     }
     for (i = 0; i < upgradeKeys.length; i++) {
         if (upgradeData[i]["owned"] == false) {
-            efficiencyData.push(["Upgrade,"+i, upgradeData[i]["efficiency"]]);
+            efficiencyData.push(["Upgrade," + i, upgradeData[i]["efficiency"]]);
         }
     }
     for (i = 0; i < Object.keys(efficiencyData).length; i++) {
@@ -461,6 +456,9 @@ function calculateUpgradeTotalCost(heroID, upgradeID) {
     return calculateCostUpToLevel(heroID, hero1["level"], upgrade1["level"]) + upgrade1["cost"];
 }
 
+/**
+ * @return {number}
+ */
 function DPSGainedHero(heroID, level) {
     heroB = heroData[heroID];
     heroBDPS = heroB["currentDPS"];
@@ -489,7 +487,7 @@ function calculateAllEfficiencies() {
             cost10xMult = calculateCostUpToLevel(i, heroData[i]["level"], 1000);
             DPS10xChange = (10 * Math.pow(4, 32) * (heroData[i]["currentDPS"] * (1000 / heroData[i]["level"]))) - heroData[i]["currentDPS"];
         } else if (heroData[i]["level"] != 0) {
-            var next4xlevel = Math.ceil((heroData[i]["level"]+1) / 25) * 25;
+            var next4xlevel = Math.ceil((heroData[i]["level"] + 1) / 25) * 25;
             cost4xMult = calculateCostUpToLevel(i, heroData[i]["level"], next4xlevel);
             var other10xbonus = 0;
             if (next4xlevel % 1000 == 0) {
@@ -498,9 +496,9 @@ function calculateAllEfficiencies() {
                 other10xbonus = 1;
             }
             DPS4xChange = (Math.pow(10, other10xbonus) * 4 * (heroData[i]["currentDPS"] * (next4xlevel / heroData[i]["level"]))) - heroData[i]["currentDPS"];
-            var next10xlevel = Math.ceil((heroData[i]["level"]+1) / 1000) * 1000;
+            var next10xlevel = Math.ceil((heroData[i]["level"] + 1) / 1000) * 1000;
             cost10xMult = calculateCostUpToLevel(i, heroData[i]["level"], next10xlevel);
-            var other4xbonus = Math.floor((next10xlevel - (heroData[i]["level"]+1)) / 25);
+            var other4xbonus = Math.floor((next10xlevel - (heroData[i]["level"] + 1)) / 25);
             DPS10xChange = (Math.pow(4, other4xbonus) * 10 * (heroData[i]["currentDPS"] * (next10xlevel / heroData[i]["level"]))) - heroData[i]["currentDPS"];
         } else {
             cost4xMult = calculateCostUpToLevel(i, 0, 200);
@@ -557,7 +555,7 @@ function calculateAllEfficiencies() {
 
                 case "upgradeClickDpsPercent":
                     var clickDPSIncrease = heroDPS * 0.01 * Number(upgradeData[i]["upgradeParams"][0]) * (1 + (ancientData[16]["level"] * 0.2));
-                    var criticalDPSIncrease = (clickDPSIncrease * criticalClickDamage) / clickDamage
+                    var criticalDPSIncrease = (clickDPSIncrease * criticalClickDamage) / clickDamage;
                     upgradeData[i]["DPSChange"] = enableClicking * ((!enableCritical * clickDPSIncrease * clickSpeed) + (enableCritical * criticalDPSIncrease * clickSpeed));
                     break;
 
@@ -572,10 +570,6 @@ function calculateAllEfficiencies() {
             upgradeData[i]["efficiency"] = "N/A";
         }
     }
-}
-
-function purchaseToHeroName(purchase) {
-    return heroData[Number(purchase[0].split(",")[2])]["name"];
 }
 
 function recalculate() { //Will be called initially to calculate everything and whenever
@@ -607,7 +601,7 @@ function decodeSave() {
             }
         }
         if (typeof(JSON.parse(atob(str))) == "object") {
-            parsedSaveData =  JSON.parse(atob(str));
+            parsedSaveData = JSON.parse(atob(str));
         } else {
             window.alert("Invalid Save File (Was not an Object");
             parsedSaveData = {};
@@ -629,21 +623,13 @@ function updateUserSave() { //after decoding a save this will put that decoded i
         var keys = Object.keys(parsedSaveData.achievements);
         for (i = 0; i < achievKeys.length; i++) {
             var achievID = Number(achievData[i]["id"]);
-            if (keys.indexOf(achievID.toString()) > -1) {
-                userSave.achievements[i] = true;
-            } else {
-                userSave.achievements[i] = false;
-            }
+            userSave.achievements[i] = keys.indexOf(achievID.toString()) > -1;
         }
         userSave.upgrades = Array();
         var keys = Object.keys(parsedSaveData.upgrades);
         for (i = 0; i < upgradeKeys.length; i++) {
             var upgradeID = Number(upgradeData[i]["id"]);
-            if (keys.indexOf(upgradeID.toString()) > -1) {
-                userSave.upgrades[i] = true;
-            } else {
-                userSave.upgrades[i] = false;
-            }
+            userSave.upgrades[i] = keys.indexOf(upgradeID.toString()) > -1;
         }
         userSave.ancients = Array();
         var keys = Object.keys(parsedSaveData.ancients.ancients);
@@ -698,10 +684,10 @@ function numberWithCommas(number) { //Converts 1234567 into 1,234,567. Also is c
 }
 
 function formatNumber(num) { //Converts a number into what is shown InGame
-    var sign = num && num/Math.abs(num);
+    var sign = num && num / Math.abs(num);
     var number = Math.abs(num);
-    var SIUnits = ["","","K","M","B","T","q","Q","s","S","O","N","d","D","!","@","#","$","%","^","%","*","[","]","{","}",";","\'",":","\"","<",">","?","/","\\","|","~","`","_","=","-","+"	];
-    var digitCount = 	number && Math.floor(1+(Math.log(number)/Math.LN10));
+    var SIUnits = ["", "", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "D", "!", "@", "#", "$", "%", "^", "%", "*", "[", "]", "{", "}", ";", "\'", ":", "\"", "<", ">", "?", "/", "\\", "|", "~", "`", "_", "=", "-", "+"    ];
+    var digitCount = number && Math.floor(1 + (Math.log(number) / Math.LN10));
     var digitsShown = 0;
     var symbol = "";
     if (digitCount > 127) {
@@ -710,10 +696,10 @@ function formatNumber(num) { //Converts a number into what is shown InGame
     } else if (digitCount < 6) {
         digitsShown = digitCount
     } else {
-        symbol = SIUnits[Math.floor(digitCount/3)];
+        symbol = SIUnits[Math.floor(digitCount / 3)];
         digitsShown = 3 + (digitCount % 3);
     }
-    var truncNumber = Math.floor(number/Math.pow(10,digitCount-digitsShown));
+    var truncNumber = Math.floor(number / Math.pow(10, digitCount - digitsShown));
     if (sign == 1) {
         return numberWithCommas(truncNumber) + symbol;
     } else if (sign == -1) {
@@ -724,7 +710,7 @@ function formatNumber(num) { //Converts a number into what is shown InGame
 }
 
 function saveSaveData() { //Will save the data to local storage
-    if (typeof(Storage)!="undefined" && Object.keys(userSave).length != 0) {
+    if (typeof(Storage) != "undefined" && Object.keys(userSave).length != 0) {
         localStorage.setItem("save", JSON.stringify(userSave));
     }
 }
@@ -747,14 +733,13 @@ function purchase(num) {
 function purchaseLevel(num) {
     var purchase = efficiencyData[num][0].split(",");
     if (purchase[0] == "Hero") {
-        var heroA = heroData[Number(purchase[2])];
         if (Number(purchase[1]) == 1) {
             return heroData[Number(purchase[2])]["level"] + 1;
         } else if (Number(purchase[1]) == 4) {
             if (heroData[Number(purchase[2])]["level"] < 200) {
                 return 200;
             } else {
-                return Math.ceil((heroData[Number(purchase[2])]["level"]+1) / 25) * 25;
+                return Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 25) * 25;
             }
         } else {
             return Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 1000) * 1000;
@@ -768,14 +753,13 @@ function purchaseNextN(n) {
     for (a = 0; a < n; a++) {
         var purchase = efficiencyData[0][0].split(",");
         if (purchase[0] == "Hero") {
-            var heroA = heroData[Number(purchase[2])];
             if (Number(purchase[1]) == 1) {
                 heroData[Number(purchase[2])]["level"] += 1;
             } else if (Number(purchase[1]) == 4) {
                 if (heroData[Number(purchase[2])]["level"] < 200) {
                     heroData[Number(purchase[2])]["level"] = 200;
                 } else {
-                    heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"]+1) / 25) * 25;
+                    heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 25) * 25;
                 }
             } else {
                 heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 1000) * 1000;
@@ -804,14 +788,13 @@ function getNextPurchaseLevel(num) {
         while (purchaseIsSame) {
             var purchase = efficiencyData[0][0].split(",");
             if (purchase[2] == initPurchase[2]) {
-                var heroA = heroData[Number(purchase[2])];
                 if (Number(purchase[1]) == 1) {
                     heroData[Number(purchase[2])]["level"] += 1;
                 } else if (Number(purchase[1]) == 4) {
                     if (heroData[Number(purchase[2])]["level"] < 200) {
                         heroData[Number(purchase[2])]["level"] = 200;
                     } else {
-                        heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"]+1) / 25) * 25;
+                        heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 25) * 25;
                     }
                 } else {
                     heroData[Number(purchase[2])]["level"] = Math.ceil((heroData[Number(purchase[2])]["level"] + 1) / 1000) * 1000;
@@ -857,56 +840,48 @@ function updateEfficiencyTable() {
     }
 }
 
-function graph(){
+function graph() {
     google.load('visualization', '1.0', {
         packages: ['corechart'],
         callback: function drawChart() {
             var data = new google.visualization.arrayToDataTable([
-                ["Hero","DPS"],
+                ["Hero", "DPS"],
                 ["Cid", heroData[0]["currentClickDamage"] * clickSpeed],
-                ["Treebeast",heroData[1]["currentDPS"]],
-                ["Ivan",heroData[2]["currentDPS"]],
-                ["Brittany",heroData[3]["currentDPS"]],
-                ["The Wandering Fisherman",heroData[4]["currentDPS"]],
-                ["Betty",heroData[5]["currentDPS"]],
-                ["The Masked Samurai",heroData[6]["currentDPS"]],
-                ["Leon",heroData[7]["currentDPS"]],
-                ["The Great Forest Seer",heroData[8]["currentDPS"]],
-                ["Alexa",heroData[9]["currentDPS"]],
-                ["Natalia",heroData[10]["currentDPS"]],
-                ["Mercedes",heroData[11]["currentDPS"]],
-                ["Bobby",heroData[12]["currentDPS"]],
-                ["Broyle",heroData[13]["currentDPS"]],
-                ["Sir George II",heroData[14]["currentDPS"]],
-                ["King Midas",heroData[15]["currentDPS"]],
-                ["Referi Jerator",heroData[16]["currentDPS"]],
-                ["Abbadon",heroData[17]["currentDPS"]],
-                ["Ma Zhu",heroData[18]["currentDPS"]],
-                ["Amenhoep",heroData[19]["currentDPS"]],
-                ["Beastlord",heroData[20]["currentDPS"]],
-                ["Athena",heroData[21]["currentDPS"]],
-                ["Aphrodite",heroData[22]["currentDPS"]],
-                ["Shinatobe",heroData[23]["currentDPS"]],
-                ["Grant",heroData[24]["currentDPS"]],
-                ["Frostleaf",heroData[25]["currentDPS"]]
+                ["Treebeast", heroData[1]["currentDPS"]],
+                ["Ivan", heroData[2]["currentDPS"]],
+                ["Brittany", heroData[3]["currentDPS"]],
+                ["The Wandering Fisherman", heroData[4]["currentDPS"]],
+                ["Betty", heroData[5]["currentDPS"]],
+                ["The Masked Samurai", heroData[6]["currentDPS"]],
+                ["Leon", heroData[7]["currentDPS"]],
+                ["The Great Forest Seer", heroData[8]["currentDPS"]],
+                ["Alexa", heroData[9]["currentDPS"]],
+                ["Natalia", heroData[10]["currentDPS"]],
+                ["Mercedes", heroData[11]["currentDPS"]],
+                ["Bobby", heroData[12]["currentDPS"]],
+                ["Broyle", heroData[13]["currentDPS"]],
+                ["Sir George II", heroData[14]["currentDPS"]],
+                ["King Midas", heroData[15]["currentDPS"]],
+                ["Referi Jerator", heroData[16]["currentDPS"]],
+                ["Abbadon", heroData[17]["currentDPS"]],
+                ["Ma Zhu", heroData[18]["currentDPS"]],
+                ["Amenhoep", heroData[19]["currentDPS"]],
+                ["Beastlord", heroData[20]["currentDPS"]],
+                ["Athena", heroData[21]["currentDPS"]],
+                ["Aphrodite", heroData[22]["currentDPS"]],
+                ["Shinatobe", heroData[23]["currentDPS"]],
+                ["Grant", heroData[24]["currentDPS"]],
+                ["Frostleaf", heroData[25]["currentDPS"]]
             ]);
             var options = {
                 title: 'Pie Chart of Hero DPS',
                 backgroundColor: '#E3DAC9',
-                chartArea:{left:10,top:20,width:'100%',height:'100%'}
+                chartArea: {left: 10, top: 20, width: '100%', height: '100%'}
             };
             var chart = new google.visualization.PieChart(document.getElementById('piechart'));
             chart.draw(data, options);
         }
     })
-}
-
-function setContent(){
-    console.log("click");
-
-
-
-
 }
 
 function updateDOM() { //Will put calculated elements onto their respective DOM elements
@@ -918,8 +893,6 @@ function addEventListeners() { //Everything that requires waiting for user input
     document.getElementById("updateSaveData").onclick = updateAll;
     document.getElementById("saveAll").onclick = saveSaveData;
     document.getElementById("updateValues").onclick = updateValues;
-
-
 }
 
 function debugLogger() {
@@ -937,7 +910,6 @@ function postInit() { //PostInit Phase
     addEventListeners();
     debugLogger();
 }
-
 
 
 postInit();
