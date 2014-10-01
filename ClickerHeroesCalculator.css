@@ -45,10 +45,10 @@ p {
     float: left;
     height: 404px;
     background-color: #E3DAC9;
-    width: calc(50% - 6px);
+    width: calc(50% - 1px);
     border-bottom: 1px solid;
     border-right: 1px solid;
-    padding-left: 5px;
+    overflow-y: auto;
 }
 
 #generaldata {
@@ -74,10 +74,32 @@ p {
     float: right;
     height: 404px;
     background-color: #E3DAC9;
-    width: calc(50% - 6px);
+    width: calc(50% - 1px);
     border-left: 1px solid;
     border-top: 1px solid;
-    padding-left: 5px;
+    overflow-y: auto;
+}
+
+#heroTableOut {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    border-style: hidden;
+}
+
+#heroTableOut tr, #heroTableOut td, #heroTableOut th {
+    border: 1px solid;
+}
+
+#efficiencyTableOut {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    border-style: hidden;
+}
+
+#efficiencyTableOut tr, #efficiencyTableOut td, #efficiencyTableOut th {
+    border: 1px solid;
 }
 
 #savediv {
@@ -116,37 +138,7 @@ p {
     border-bottom: 2px solid;
 }
 
-/*
-#nav1 {
-    width: calc((100% - 4px) / 3);
-    background-color: #E3DAC9;
-    float: left;
-    height: 38px;
-    line-height: 38px;
-    text-align: center;
-    border-right: 2px solid;
-}
-
-#nav2 {
-    width: calc((100% - 4px) / 3);
-    background-color: #E3DAC9;
-    float: left;
-    height: 38px;
-    line-height: 38px;
-    text-align: center;
-}
-
-#nav3 {
-    width: calc((100% - 4px) / 3);
-    background-color: #E3DAC9;
-    float: left;
-    height: 38px;
-    line-height: 38px;
-    text-align: center;
-    border-left: 2px solid;
-}
-*/
-#navinput {
+#heronavinput, #ancientnavinput, #achievnavinput, #faqnavinput {
     background-color: #E3DAC9;
     height: 620px;
     width: 100%;
@@ -154,13 +146,15 @@ p {
     overflow-y: auto;
 }
 
-#heroTable table, #heroTable td, #heroTable th {
-    border: 1px solid black;
+#heroTable table {
     border-collapse: collapse;
+    border-style: hidden;
+    border-right: 1px;
     width: 100%
 }
 
 #heroTable th, #heroTable td {
     align-content: center;
+    border: 1px solid black;
     width: 25%;
 }

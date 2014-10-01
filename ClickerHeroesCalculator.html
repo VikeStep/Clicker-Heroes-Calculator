@@ -19,30 +19,45 @@
         </div>
         <div id="outdata1">
             <div id="efficiencies">
-                <table>
-                    <tr>
-                        <td style="width:300px;">Purchase</td>
-                        <td>Level</td>
-                    </tr>
-                    <tr>
-                        <td id="r1c1"></td>
-                        <td id="r1c2"></td>
-                        <td><input id="purchase1" type="button" value="Purchase" onclick="purchase(0)"/></td>
-                    </tr>
-                    <tr>
-                        <td id="r2c1"></td>
-                        <td id="r2c2"></td>
-                        <td><input id="purchase2" type="button" value="Purchase" onclick="purchase(1)"/></td>
-                    </tr>
-                    <tr>
-                        <td id="r3c1"></td>
-                        <td id="r3c2"></td>
-                        <td><input id="purchase3" type="button" value="Purchase" onclick="purchase(2)"/></td>
-                    </tr>
+                <table id="efficiencyTableOut">
                 </table>
             </div>
             <div id="generaldata">
-                Stuff like total DPS, multipliers here
+                Total DPS:
+                <div id="statstotaldps" style="display:inline-block;">0</div>
+                <br/>
+                Click Damage:
+                <div id="statsclickdamage" style="display:inline-block;">0</div>
+                <br/>
+                Hero Souls:
+                <div id="statsherosouls" style="display:inline-block;">0</div>
+                <br/>
+                Dark Rituals Used:
+                <div id="statsdarkrituals" style="display:inline-block;">0</div>
+                <br/>
+                Energized Dark Rituals Used:
+                <div id="statsenergizeddarkrituals" style="display:inline-block;">0</div>
+                <br/>
+                Achievements Unlocked:
+                <div id="statsachievementsunlocked" style="display:inline-block;">0/87</div>
+                <br/>
+                Total Hero Levels:
+                <div id="statsherolevels" style="display:inline-block;">0</div>
+                <br/>
+                Hero Souls Gained From Ascending:
+                <div id="statsgainedherosouls" style="display:inline-block;">0</div>
+                <br/>
+                Achievement Multiplier:
+                <div id="statsachievementmultiplier" style="display:inline-block;">0</div>
+                <br/>
+                Upgrade Multiplier (that affects all heroes):
+                <div id="statsupgrademultiplier" style="display:inline-block;">0</div>
+                <br/>
+                Hero Souls Multiplier:
+                <div id="statsherosoulsmultiplier" style="display:inline-block;">0</div>
+                <br/>
+                Dark Ritual Multiplier:
+                <div id="statsdarkritualmultiplier" style="display:inline-block;">0</div>
             </div>
         </div>
         <div id="outdata2">
@@ -50,7 +65,8 @@
                 <div id="piechart" style="width: 100%; height: 100%;"></div>
             </div>
             <div id="herodata">
-                Data for each hero here with a scroll bar for this section
+                <table id="heroTableOut">
+                </table>
             </div>
         </div>
     </div>
@@ -73,24 +89,14 @@
         </div>
         <div id="indata2">
             <div id="navbar" style="text-align: center;">
-                <!--<ul style="list-style-type:none; margin: 0.5; padding: 10; text-align: center;">
-                    <li style="display:inline;">
-                    <li style="display:inline;">li>
-                    <li style="display:inline;"></li>
-                    <li style="display:inline;">
-                </ul>-->
-
                 <a class=link data-link="first" href="#nav">Heroes</a>
                 <a class=link data-link="second" href="#nav">Ancients</a>
                 <a class=link data-link="third" href="#nav">Achievements</a>
                 <a class=link data-link="fourth" href="#nav">FAQ</a>
-
-
             </div>
             <div class=navContainer>
-
-                <div class=navItem id="navinput" data-link="first">
-                    <div id="heroTable">
+                <div class=navItem id="heronavinput" data-link="first">
+                <div id="heroTable">
                         <table style="text-align:center;">
                             <tr>
                                 <td><a><img src="heroSprites/heroes/cid.PNG" alt="Cid, the Helpful Adventurer"></a></td>
@@ -143,14 +149,14 @@
                         </table>
                     </div>
                 </div>
-                <div class=navItem id="navinput" data-link="second" style="width: 99.4%; height: 100%;">
-                    Ancients Nav!
+                <div class=navItem id="ancientnavinput" data-link="second" style="width: 99.4%; height: 100%;">
+                Ancients Nav!
                 </div>
-                <div class=navItem id="navinput" data-link="third" style="width: 99.4%; height: 100%;">
-                    Achievements nav!
+                <div class=navItem id="achievnavinput" data-link="third" style="width: 99.4%; height: 100%;">
+                Achievements nav!
                 </div>
-                <div class=navItem id="navinput" data-link="fourth" style="width: 99.4%; height: 100%;">
-                    FAQ nav!
+                <div class=navItem id="faqnavinput" data-link="fourth" style="width: 99.4%; height: 100%;">
+                FAQ nav!
                 </div>
             </div>
             <script type="text/javascript">
