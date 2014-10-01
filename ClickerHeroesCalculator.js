@@ -778,13 +778,13 @@ function updateEfficiencyTable() {
         }
     } else {
         for (var rownum = 0; rownum < 20; rownum++) {
-            var rowchanging = efficiencyTable.rows(rownum + 1);
+            var rowchanging = efficiencyTable.rows[rownum + 1];
             if (next20Purchases[rownum][0] == "Hero") {
                 rowchanging.cells[0].innerHTML = heroData[next20Purchases[rownum][3]]["name"];
-                rowchanging.cells[0].innerHTML = next20Purchases[rownum][4];
+                rowchanging.cells[1].innerHTML = next20Purchases[rownum][4];
             } else {
                 rowchanging.cells[0].innerHTML = upgradeData[next20Purchases[rownum][3]]["name"];
-                rowchanging.cells[0].innerHTML = "N/A";
+                rowchanging.cells[1].innerHTML = "N/A";
             }
         }
     }
