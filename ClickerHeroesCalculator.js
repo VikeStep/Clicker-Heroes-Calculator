@@ -765,7 +765,7 @@ function updateEfficiencyTable() {
         var headerRow = efficiencyTable.insertRow(0);
         headerRow.insertCell(0).appendChild(document.createTextNode("Name"));
         headerRow.insertCell(1).appendChild(document.createTextNode("Level"));
-        //headerRow.insertCell(3).appendChild(document.createTextNode("Purchase"));
+        headerRow.insertCell(2).appendChild(document.createTextNode("Buy"));
         for (var rownum = 0; rownum < 20; rownum++) {
             var insertingRow = efficiencyTable.insertRow(rownum + 1);
             if (next20Purchases[rownum][0] == "Hero") {
@@ -775,6 +775,20 @@ function updateEfficiencyTable() {
                 insertingRow.insertCell(0).appendChild(document.createTextNode(upgradeData[next20Purchases[rownum][3]]["name"]));
                 insertingRow.insertCell(1).appendChild(document.createTextNode("N/A"));
             }
+            var insertingButton = document.createElement("input");
+            insertingButton.setAttribute("type", "button");
+            insertingButton.setAttribute("name", "buy" + rownum);
+            insertingButton.setAttribute("value", "Buy");
+            insertingButton.onclick = function (newrownum) {
+                return function () {
+                    purchaseFromEfficiency(newrownum);
+                };
+            }(rownum);
+            /*insertingButton.addEventListener("click", function(){
+             console.log(insertingButton.parentNode.parentNode.rowIndex);
+             purchaseFromEfficiency(insertingButton.parentNode.parentNode.rowIndex);
+             });*/
+            insertingRow.insertCell(2).appendChild(insertingButton);
         }
     } else {
         for (var rownum = 0; rownum < 20; rownum++) {
@@ -792,6 +806,7 @@ function updateEfficiencyTable() {
 
 //To Be Implemented
 function purchaseFromEfficiency(num) {
+    console.log(num);
     var pur = next20Purchases[num];
     if (pur[0] == "Hero") {
         heroData[pur[3]]["level"] = pur[4];
@@ -857,6 +872,25 @@ function updateHeroDataOutTable() {
     }
 }
 
+function createPopup(type, id) {
+    var popupDiv = document.getElementById("popupdiv");
+    popupDiv.innerHTML = "";
+    if (type == "Hero") {
+        popupDiv.style.display = "block";
+        popupDiv.innerHTML = heroData[id]["name"] + "<br/>";
+        var closeButton = document.createElement("input");
+        closeButton.setAttribute("type", "button");
+        closeButton.setAttribute("value", "Close");
+        closeButton.setAttribute("name", "Close");
+        closeButton.onclick = closePopup;
+        popupDiv.appendChild(closeButton);
+    }
+}
+
+function closePopup() {
+    document.getElementById("popupdiv").style.display = "none";
+}
+
 function graph() {
     google.load('visualization', '1.0', {
         packages: ['corechart'],
@@ -892,8 +926,13 @@ function graph() {
             ]);
             var options = {
                 title: 'Pie Chart of Hero DPS',
+                titleTextStyle: {
+                    fontSize: 15,
+                    bold: true
+                },
                 backgroundColor: '#E3DAC9',
-                chartArea: {left: 10, top: 20, width: '100%', height: '100%'}
+                chartArea: {left: 20, top: 50, width: '100%', height: '100%'},
+                is3D: true
             };
             var chart = new google.visualization.PieChart(document.getElementById('piechart'));
             chart.draw(data, options);
@@ -913,6 +952,16 @@ function addEventListeners() { //Everything that requires waiting for user input
     document.getElementById("saveAll").onclick = saveSaveData;
     document.getElementById("updateValues").onclick = updateValues;
     window.onresize = updateDOM;
+    var heroTabIn = document.getElementById("heroTableIn");
+    for (var i = 0; i < heroTabIn.rows.length; i++) {
+        for (var j = 0; j < heroTabIn.rows[i].cells.length; j++) {
+            heroTabIn.rows[i].cells[j].onclick = (function (i, j) {
+                return function () {
+                    createPopup("Hero", (4 * i) + j);
+                };
+            }(i, j));
+        }
+    }
 }
 
 function postInit() { //PostInit Phase

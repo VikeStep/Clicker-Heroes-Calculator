@@ -158,3 +158,20 @@ p {
     border: 1px solid black;
     width: 25%;
 }
+
+.centerdiv {
+    position: absolute;
+    width: 400px;
+    height: 600px;
+    left: 50%;
+    top: 50%;
+    margin-left: -50px;
+    margin-top: -300px;
+}
+
+#popupdiv {
+    background-color: #E3DAC9;
+    border: 5px double black;
+    display: none;
+    z-index: 100;
+}
