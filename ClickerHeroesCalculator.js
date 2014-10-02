@@ -1,17 +1,23 @@
 //This was made by VikeStep and stennett
+//If you wish to assist in the creation of this site
 
 /*
  TODO:
- - Convert large numbers to run off Base64 Maths
+
+ MAJOR
+ - Hero, Ancient and Achievement Input Sections
+ - Determine Gold Per Second and use that in efficiency. This will involve having a current zone determined by calculation or the user
+ - Ancient Data and Efficiencies
  - Factor in desired Hero Souls to calculations
- - Add in Efficiencies for Achievements, Ancients and possibly ascending
- - Add in Ancient Info and their effects
- - Add in Zone information to find Gold per Second when Idle
+ - Fix Clicking and Critical Clicking calculations in regards to efficiency when enabled.
+
+ MINOR:
+ - Convert large numbers to run off Base64 Maths
  - Add in Max DPS using Skills
- - Timer that recalculates every specified time (config)
+ - Timer that recalculates every specified time (configurable)
  - Option to use scientific notation for numbering
- - Update CSS and HTML
- - Factor in Clicking to Hero multiplier Upgrades
+ - FAQ
+ - Secondary Efficiency for when your money is able to purchase the best cost/dps (ultimately better formula as the current efficiency formula takes into consideration time taken to buy hero)
  */
 
 //Initialising Global Variables
@@ -445,6 +451,9 @@ function calculateUpgradeTotalCost(heroID, upgradeID) {
     return calculateCostUpToLevel(heroID, hero1["level"], upgrade1["level"]) + upgrade1["cost"];
 }
 
+/**
+ * @return {number}
+ */
 function DPSGainedHero(heroID, level) {
     var heroB = heroData[heroID];
     var heroBDPS = heroB["currentDPS"];
@@ -784,10 +793,6 @@ function updateEfficiencyTable() {
                     purchaseFromEfficiency(newrownum);
                 };
             }(rownum);
-            /*insertingButton.addEventListener("click", function(){
-             console.log(insertingButton.parentNode.parentNode.rowIndex);
-             purchaseFromEfficiency(insertingButton.parentNode.parentNode.rowIndex);
-             });*/
             insertingRow.insertCell(2).appendChild(insertingButton);
         }
     } else {
@@ -804,9 +809,7 @@ function updateEfficiencyTable() {
     }
 }
 
-//To Be Implemented
 function purchaseFromEfficiency(num) {
-    console.log(num);
     var pur = next20Purchases[num];
     if (pur[0] == "Hero") {
         heroData[pur[3]]["level"] = pur[4];
