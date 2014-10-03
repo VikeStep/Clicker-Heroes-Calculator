@@ -6,7 +6,6 @@
 
  MAJOR
  - Hero, Ancient and Achievement Input Sections
- - Determine Gold Per Second and use that in efficiency. This will involve having a current zone determined by calculation or the user
  - Ancient Data and Efficiencies
  - Factor in desired Hero Souls to calculations
  - Fix Clicking and Critical Clicking calculations in regards to efficiency when enabled.
@@ -43,10 +42,12 @@ var saveData = ""; //Encoded Save Data
 var parsedSaveData = Object(); //Decoded Save Data
 
 var totalDPS = 0;
+var totalGPS = 0;
 var heroDPS = 0;
 var heroSouls = 0;
-var currentHighestZone = 0;
-var highestZoneReached = 0;
+var currentZone = 1;
+var currentHighestZone = 1;
+var highestZoneReached = 1;
 var next20Purchases = [];
 
 var enableClicking = false;
@@ -67,6 +68,7 @@ var darkRitualMultiplier = 1;
 var allHeroMultiplier = 1;
 var heroSoulsMultiplier = 1;
 var allDPSMultiplier = 1;
+var goldMultiplier = 1;
 
 //Functions for PreInit Phase - Loading all the data from local storage
 function loadLocalStorage() { //Will grab the data from local storage
@@ -118,7 +120,8 @@ function splitParams(param) { //Simply splits a string into array where ", " or 
     return param.split(" ").join("").split(",");
 }
 
-function populateArrays() { //Populates the 4 main arrays with data from the json and with placeholders for fillInData()
+//Populates the 4 main arrays with data from the json and with placeholders for fillInData()
+function populateArrays() {
     //Hero Data
     for (var i = 0; i < heroKeys.length; i++) {
         //Static Data
@@ -218,7 +221,8 @@ function fillInData() { //Puts data from userSave into the 4 arrays
         heroSouls = userSave.heroSouls;
         allDPSMultiplier = userSave.allDPSMultiplier;
         highestZoneReached = userSave.highestZone;
-        currentHighestZone = userSave.currentZone;
+        currentHighestZone = userSave.currentHighestZone;
+        currentZone = userSave.currentZone;
     }
 }
 
@@ -258,9 +262,12 @@ function calculateGlobalMultipliers() { //Calculates global multipliers that cov
         }
     }
     allHeroMultiplier = 1;
+    goldMultiplier = 1;
     for (var i = 0; i < upgradeKeys.length; i++) {
         if (upgradeData[i]["type"] == "upgradeEveryonePercent" && upgradeData[i]["owned"] == true) {
             allHeroMultiplier = allHeroMultiplier * (1 + (Number(upgradeData[i]["upgradeParams"][0]) / 100));
+        } else if (upgradeData[i]["type"] == "upgradeGoldFoundPercent" && upgradeData[i]["owned"] == true) {
+            goldMultiplier = goldMultiplier * (1 + (Number(upgradeData[i]["upgradeParams"][0]) / 100));
         }
     }
     heroSoulsMultiplier = 1 + (heroSouls / 10);
@@ -410,9 +417,27 @@ function calculateClickingInfo() {
     }
 }
 
+function calculateDPStoGoldRatio(level) {
+    var monsterLife = Math.ceil((10 * (Math.pow(1.6, Math.min(140, level) - 1) + Math.min(140, level) - 1)) * Math.pow(1.15, Math.max(140, level) - 140));
+    var averageGold = 0;
+    if (level % 5 == 0) {
+        monsterLife = Math.ceil(Math.pow(1 - (0.02 * ancientData[15]["level"]), 2) * ((10 * (Math.pow(1.6, Math.min(140, level) - 1) + Math.min(140, level) - 1)) * Math.pow(1.15, Math.max(140, level) - 140)) * 10);
+        averageGold = Math.ceil((monsterLife / 15) * goldMultiplier * Math.min(3, Math.pow(1.025, Math.max(0, level - 75))) * (1 + (0.05 * ancientData[5]["level"])) * (1 + (0.225 * ancientData[9]["level"])));
+    } else {
+        var monsterGold = Math.ceil((monsterLife / 15) * goldMultiplier * Math.min(3, Math.pow(1.025, Math.max(0, level - 75))) * (1 + (0.05 * ancientData[5]["level"])));
+        var treasureChestGold = monsterGold * 10 * (1 + (0.5 * ancientData[6]["level"]));
+        var treasureChestChance = 0.01 * (1 + (ancientData[11]["level"] * 0.2));
+        averageGold = ((treasureChestChance * treasureChestGold) + ((1 - treasureChestChance) * monsterGold)) * (1 + (0.225 * ancientData[9]["level"]));
+    }
+    var timeTaken = (monsterLife / totalDPS) + 0.5;
+    totalGPS = averageGold / timeTaken;
+    return totalGPS / totalDPS;
+}
+
 function calculateEfficiency(cost, change) {
+    var gpsMult = calculateDPStoGoldRatio(currentZone);
     if (change != 0) {
-        return (1.15 * (cost / totalDPS)) + (cost / change);
+        return (1.15 * (cost / (gpsMult * totalDPS))) + (cost / (gpsMult * change));
     } else {
         return Infinity;
     }
@@ -527,12 +552,12 @@ function calculateAllEfficiencies() {
                     upgradeData[i]["DPSChange"] = 0.01 * (1 + (ancientData[16]["level"] * 0.2)) * (heroData[0]["currentClickDamage"] + CidClickDamageGain) * Number(upgradeData[i]["upgradeParams"][0]) * clickSpeed * enableClicking;
                     break;
 
-                case "upgradeGoldFoundPercent": //Assuming DPS and GPS are directly proportional this will work
                 case "upgradeHeroPercent": // THIS NEEDS FIXING FOR CLICK STUFF
                     var heroDPSIncrease = (0.01 * Number(upgradeData[i]["upgradeParams"][1]) * (heroA["currentDPS"] + DPSFromHero)) + DPSFromHero;
                     upgradeData[i]["DPSChange"] = heroDPSIncrease; //Will Change to include Clicks when formula figured out
                     break;
 
+                case "upgradeGoldFoundPercent": //Assuming DPS and GPS are directly proportional this will workvar
                 case "upgradeEveryonePercent": //THIS NEEDS FIXING FOR CLICK STUFF
                     var heroDPSIncrease = (0.01 * Number(upgradeData[i]["upgradeParams"][0]) * (heroDPS + DPSFromHero)) + DPSFromHero; //Simplified Calculation that avoids problems with integer precision
                     var clickDPSIncrease = 0; //0.01 * Number(upgradeData[i]["upgradeParams"][0]) * heroData[0]["currentClickDamage"] * (1 + (ancientData[16]["level"] * 0.2));
@@ -623,6 +648,11 @@ function findNext20Purchases() {
     }
     heroData = savedHeroData;
     upgradeData = savedUpgradeData;
+    calculateGlobalMultipliers();
+    calculateHeroData();
+    calculateClickingInfo();
+    calculateAllEfficiencies();
+    updateEfficiencyData();
 }
 
 function recalculate() { //Will be called initially to calculate everything and whenever
@@ -656,7 +686,7 @@ function decodeSave() {
         if (typeof(JSON.parse(atob(str))) == "object") {
             parsedSaveData = JSON.parse(atob(str));
         } else {
-            window.alert("Invalid Save File (Was not an Object");
+            window.alert("Invalid Save File (Was not an Object), please create the save again");
             parsedSaveData = {};
         }
     } else {
@@ -697,7 +727,8 @@ function updateUserSave() { //after decoding a save this will put that decoded i
         userSave.heroSouls = parsedSaveData.heroSouls;
         userSave.allDPSMultiplier = parsedSaveData.allDpsMultiplier;
         userSave.highestZone = parsedSaveData.highestFinishedZonePersist;
-        userSave.currentZone = parsedSaveData.highestFinishedZone;
+        userSave.currentHighestZone = parsedSaveData.highestFinishedZone;
+        userSave.currentZone = parsedSaveData.currentZoneHeight;
     }
 }
 
@@ -709,6 +740,12 @@ function getOptions() {
         clickSpeed = 0;
     } else {
         clickSpeed = Number(clickSpeed);
+    }
+    currentZone = document.getElementById("currentZone").value;
+    if (isNaN(currentZone) || Number(currentZone) == 0) {
+        currentZone = 1;
+    } else {
+        currentZone = Number(currentZone);
     }
 }
 
