@@ -160,6 +160,24 @@ p {
     width: 25%;
 }
 
+#ancientTable table {
+    border-collapse: collapse;
+    border-style: hidden;
+    border-right: 1px;
+    width: 100%
+}
+
+#ancientTable th, #ancientTable td {
+    align-content: center;
+    border: 1px solid black;
+    width: 25%;
+}
+
+#ancientTable img {
+    width: 50%;
+    height: 50%;
+}
+
 .centerdiv {
     position: absolute;
     width: 400px;

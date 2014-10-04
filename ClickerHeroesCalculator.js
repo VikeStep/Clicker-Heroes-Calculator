@@ -5,7 +5,6 @@
  TODO:
 
  MAJOR
- - Ancient Input Section
  - Ancient Data and Efficiencies
  - Factor in desired Hero Souls to calculations
  - Fix Clicking and Critical Clicking calculations in regards to efficiency when enabled.
@@ -731,7 +730,7 @@ function updateUserSave() { //after decoding a save this will put that decoded i
         var keys = Object.keys(parsedSaveData.ancients.ancients);
         for (var i = 0; i < ancientKeys.length; i++) {
             var ancientID = Number(ancientData[i]["id"]);
-            if (keys.indexOf(upgradeID.toString()) > -1) {
+            if (keys.indexOf(ancientID.toString()) > -1) {
                 userSave.ancients[i] = parsedSaveData.ancients.ancients[ancientID].level;
             } else {
                 userSave.ancients[i] = 0;
@@ -972,7 +971,6 @@ function createPopup(type, id) {
     var popupDiv = document.getElementById("popupdiv");
     popupDiv.innerHTML = "";
     if (type == "Hero") {
-        openedHeroID = id;
         popupDiv.style.display = "block";
         var linebreak = document.createElement("br");
         //Hero Name Element
@@ -1028,30 +1026,63 @@ function createPopup(type, id) {
         var closeButton = document.createElement("input");
         closeButton.setAttribute("type", "button");
         closeButton.setAttribute("value", "Close and Save");
-        closeButton.onclick = function () {
-            closePopup("Hero")
-        };
+        closeButton.onclick = function (heroID) {
+            return function () {
+                closePopup("Hero", heroID)
+            };
+        }(id);
+        popupDiv.appendChild(closeButton);
+    }
+    if (type == "Ancient") {
+        popupDiv.style.display = "block";
+        var linebreak = document.createElement("br");
+        //Ancient Name
+        var ancientNameElem = document.createTextNode("Name: " + ancientData[id]["name"]);
+        //Level Input Element
+        var levelDescElem = document.createTextNode("Level: ");
+        var levelInputElem = document.createElement("input");
+        levelInputElem.setAttribute("type", "number");
+        levelInputElem.setAttribute("value", ancientData[id]["level"]);
+        levelInputElem.setAttribute("id", "ancientLevelInput");
+        popupDiv.appendChild(ancientNameElem);
+        popupDiv.appendChild(linebreak.cloneNode(true));
+        popupDiv.appendChild(levelDescElem);
+        popupDiv.appendChild(levelInputElem);
+        popupDiv.appendChild(linebreak.cloneNode(true));
+        var closeButton = document.createElement("input");
+        closeButton.setAttribute("type", "button");
+        closeButton.setAttribute("value", "Close and Save");
+        closeButton.onclick = function (heroID) {
+            return function () {
+                closePopup("Ancient", heroID)
+            };
+        }(id);
         popupDiv.appendChild(closeButton);
     }
 }
 
-function closePopup(type) {
+function closePopup(type, id) {
     var isValid = true;
     var timesAlerted = 0;
     if (type == "Hero") {
-        heroData[openedHeroID]["level"] = Number(document.getElementById("heroLevelInput").value);
-        heroData[openedHeroID]["gilded"] = Number(document.getElementById("heroGildInput").value);
-        for (var i = 0; i < heroData[openedHeroID]["upgrades"].length; i++) {
-            if (document.getElementById("upgradeInput" + i).checked && heroData[openedHeroID]["level"] < upgradeData[heroData[openedHeroID]["upgrades"][i]]["level"]) {
+        heroData[id]["level"] = Number(document.getElementById("heroLevelInput").value);
+        heroData[id]["gilded"] = Number(document.getElementById("heroGildInput").value);
+        for (var i = 0; i < heroData[id]["upgrades"].length; i++) {
+            if (document.getElementById("upgradeInput" + i).checked && heroData[id]["level"] < upgradeData[heroData[id]["upgrades"][i]]["level"]) {
                 if (timesAlerted == 0) {
-                    window.alert("Hero can not be level " + heroData[openedHeroID]["level"] + " if you have " + upgradeData[heroData[openedHeroID]["upgrades"][i]]["name"] + " which requires at least level " + upgradeData[heroData[openedHeroID]["upgrades"][i]]["level"]);
+                    window.alert("Hero can not be level " + heroData[id]["level"] + " if you have " + upgradeData[heroData[id]["upgrades"][i]]["name"] + " which requires at least level " + upgradeData[heroData[id]["upgrades"][i]]["level"]);
                     isValid = false;
                 }
             }
-            upgradeData[heroData[openedHeroID]["upgrades"][i]]["owned"] = document.getElementById("upgradeInput" + i).checked;
+            upgradeData[heroData[id]["upgrades"][i]]["owned"] = document.getElementById("upgradeInput" + i).checked;
         }
     } else {
-
+        if (ancientData[id]["maxLevel"] == 0 || Number(document.getElementById("ancientLevelInput").value) <= ancientData[id]["maxLevel"]) {
+            ancientData[id]["level"] = Number(document.getElementById("ancientLevelInput").value);
+        } else {
+            window.alert(ancientData[id]["name"] + "can't be higher than level " + ancientData[id]["maxLevel"])
+            isValid = false;
+        }
     }
     if (isValid) {
         document.getElementById("popupdiv").style.display = "none";
@@ -1128,6 +1159,16 @@ function addEventListeners() { //Everything that requires waiting for user input
             heroTabIn.rows[i].cells[j].onclick = (function (i, j) {
                 return function () {
                     createPopup("Hero", (4 * i) + j);
+                };
+            }(i, j));
+        }
+    }
+    var ancientTabIn = document.getElementById("ancientTableIn");
+    for (var i = 0; i < ancientTabIn.rows.length; i++) {
+        for (var j = 0; j < ancientTabIn.rows[i].cells.length; j++) {
+            ancientTabIn.rows[i].cells[j].onclick = (function (i, j) {
+                return function () {
+                    createPopup("Ancient", (4 * i) + j);
                 };
             }(i, j));
         }
