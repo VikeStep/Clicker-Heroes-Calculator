@@ -31,6 +31,9 @@
                 Click Damage:
                 <div id="statsclickdamage" style="display:inline-block;">0</div>
                 <br/>
+                Total Gold Per Second:
+                <div id="statstotalgps" style="display:inline-block;">0</div>
+                <br/>
                 Hero Souls:
                 <div id="statsherosouls" style="display:inline-block;">0</div>
                 <br/>
@@ -79,10 +82,13 @@
         <div id="indata1">
             <div id="options">
                 <label for="enableClicking">Enable Clicking </label><input type="checkbox" name="enableClicking"
-                                                                           id="enableClicking"/><br/>
+                                                                           id="enableClicking"
+                                                                           onchange="updateValues()"/><br/>
                 <!--Enable Critical <input type="radio" name="enableCritical" id="enableCritical"></input><br/> Disabled Until it Works-->
-                <label for="clickSpeed">Click Speed: </label><input type="text" id="clickSpeed" name="clickSpeed"/><br/>
-                <label for="currentZone">Current Zone: </label><input type="text" id="currentZone" name="currentZone"/>
+                <label for="clickSpeed">Click Speed: </label><input type="number" id="clickSpeed" name="clickSpeed"
+                                                                    value="0" onchange="updateValues()"/><br/>
+                <label for="currentZone">Current Zone: </label><input type="number" id="currentZone" name="currentZone"
+                                                                      value="1" onchange="updateValues()"/>
             </div>
             <div id="buttons">
                 <input id="updateSaveData" type="button" value="Use Save Data"/><br/>
@@ -92,9 +98,9 @@
         </div>
         <div id="indata2">
             <div id="navbar" style="text-align: center;">
-                <a class=link data-link="first" href="#nav">Heroes</a>
-                <a class=link data-link="second" href="#nav">Ancients</a>
-                <a class=link data-link="third" href="#nav">Achievements</a>
+                <a class=link data-link="first" href="#nav">Heroes</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class=link data-link="second" href="#nav">Ancients</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class=link data-link="third" href="#nav">Achievements</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <a class=link data-link="fourth" href="#nav">FAQ</a>
             </div>
             <div class=navContainer>
@@ -152,14 +158,18 @@
                         </table>
                     </div>
                 </div>
-                <div class=navItem id="ancientnavinput" data-link="second" style="width: 99.4%; height: 100%;">
-                    Ancients Nav!
+                <div class=navItem id="ancientnavinput" data-link="second">
+                Ancients Nav!
                 </div>
-                <div class=navItem id="achievnavinput" data-link="third" style="width: 99.4%; height: 100%;">
-                    Achievements nav!
+                <div class=navItem id="achievnavinput" data-link="third">
+                    <div id="achievTable">
+                        <p style="text-align: center; padding: 0; margin: 0; font-weight: bold; border-bottom: 1px solid;">
+                            Achievements</p>
+                        <table id="achievTableIn"></table>
+                    </div>
                 </div>
-                <div class=navItem id="faqnavinput" data-link="fourth" style="width: 99.4%; height: 100%;">
-                    FAQ nav!
+                <div class=navItem id="faqnavinput" data-link="fourth">
+                    <a href="http://www.reddit.com/r/ClickerHeroes/comments/2i31z3/faq/">Temporary FAQ from Reddit</a>
                 </div>
             </div>
             <script type="text/javascript">
