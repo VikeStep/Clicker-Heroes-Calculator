@@ -88,7 +88,13 @@
                 <label for="clickSpeed">Click Speed: </label><input type="number" id="clickSpeed" name="clickSpeed"
                                                                     value="0" onchange="updateValues()"/><br/>
                 <label for="currentZone">Current Zone: </label><input type="number" id="currentZone" name="currentZone"
-                                                                      value="1" onchange="updateValues()"/>
+                                                                      value="1" onchange="updateValues()"/><br/>
+                <label for="enableHeroSouls">Check for Hero Souls? </label><input type="checkbox" name="enableHeroSouls"
+                                                                                  id="enableHeroSouls"
+                                                                                  onchange="updateValues()"/><br/>
+                <label for="desiredHeroSouls">Desired Hero Souls: </label><input type="number" id="desiredHeroSouls"
+                                                                                 name="desiredHeroSouls"
+                                                                                 value="0" onchange="updateValues()"/>
             </div>
             <div id="buttons">
                 <input id="updateSaveData" type="button" value="Use Save Data"/><br/>

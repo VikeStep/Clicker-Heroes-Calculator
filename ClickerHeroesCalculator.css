@@ -180,12 +180,12 @@ p {
 
 .centerdiv {
     position: absolute;
-    width: 400px;
-    height: 600px;
+    width: 650px;
+    height: 700px;
     left: 50%;
     top: 50%;
     margin-left: -50px;
-    margin-top: -300px;
+    margin-top: -350px;
 }
 
 .link {

@@ -5,10 +5,10 @@
  TODO:
 
  MAJOR
- - Ancient Data and Efficiencies
- - Factor in desired Hero Souls to calculations
+ - Ancient Data and Efficiencies (THIS WILL BE LEFT FOR VERSION 2)
  - Fix Clicking and Critical Clicking calculations in regards to efficiency when enabled.
  - Fix Saving so it uses current data instead of last entered save
+ - Add in inputs for dark rituals, energized dark rituals, hero souls, hero souls for next ascension (i.e. primals and bosses like omeet and the green one)
 
  MINOR:
  - Convert large numbers to run off Base64 Maths
@@ -49,7 +49,6 @@ var currentZone = 1;
 var currentHighestZone = 1;
 var highestZoneReached = 1;
 var next20Purchases = [];
-
 var enableClicking = false;
 var enableCritical = false;
 var clickSpeed = 0;
@@ -59,6 +58,11 @@ var criticalClickChance = 0;
 var criticalClickMultiplier = 10;
 var clickDPS = 0;
 var criticalClickDPS = 0;
+var enableHeroSouls = false;
+var desiredHeroSouls = 0;
+var openedHeroSoulsPopup = false;
+var heroSoulsLevels = [];
+var requiredGPS = Infinity;
 
 var darkRitualsCalculated = false;
 var darkRitualsUsed = 0;
@@ -70,7 +74,6 @@ var heroSoulsMultiplier = 1;
 var allDPSMultiplier = 1;
 var goldMultiplier = 1;
 
-var openedHeroID = 0;
 var sortedAchievements = [];
 
 //Functions for PreInit Phase - Loading all the data from local storage
@@ -229,6 +232,37 @@ function fillInData() { //Puts data from userSave into the 4 arrays
     }
 }
 
+function costToDesiredHeroSouls() {
+    if (enableHeroSouls) {
+        var multTotal = 1;
+        var totalLevels = 0;
+        var indexCheapest = 0;
+        var totalCost = 0;
+        var difference = 0;
+        heroSoulsLevels = [];
+        for (i = 0; i < 26; i++) {
+            multTotal = multTotal * heroData[i]["baseCost"];
+            heroSoulsLevels[i] = heroData[i]["level"];
+            totalLevels += heroData[i]["level"];
+        }
+        if (totalLevels < (2000 * desiredHeroSouls)) {
+            difference = (2000 * desiredHeroSouls) - totalLevels;
+        }
+        for (var i = 0; i < difference; i++) {
+            var currentCosts = [];
+            for (var j = 0; j < 26; j++) {
+                currentCosts[j] = calculateLevelUpCost(j, heroSoulsLevels[j]);
+            }
+            indexCheapest = currentCosts.indexOf(Math.min.apply(Math, currentCosts));
+            heroSoulsLevels[indexCheapest] += 1;
+        }
+        for (var i = 0; i < 26; i++) {
+            totalCost += calculateCostUpToLevel(i, heroData[i]["level"], heroSoulsLevels[i]);
+        }
+        requiredGPS = totalCost / 300; //This will start building towards the hero count when it will finish in 5 minutes
+    }
+}
+
 function calculateDarkRitualInfo() { //Will reverse engineer to find the amount of dark rituals used comparing save data to calculated data
     if (allDPSMultiplier != 0) {
         var unknownMult = allDPSMultiplier / (allHeroMultiplier * achievementMultiplier);
@@ -300,7 +334,7 @@ function calculateHeroData() { //Calculates levelMultiplier, nextCost, currentDP
             }
             heroData[i]["levelMultiplier"] = Math.pow(4, multiCount - thousandCount) * Math.pow(10, thousandCount);
         } else if (heroData[i]["level"] >= 200 && heroData[i]["id"] != 1 && heroData[i]["level"] < 4100) {
-            var multiCount = Math.ceil((4100 - heroData[i]["level"]) / 25)
+            var multiCount = Math.ceil((4100 - heroData[i]["level"]) / 25);
             heroData[i]["levelMultiplier"] = Math.pow(10, 3) * Math.pow(4, 140 + multiCount);
         } else if (heroData[i]["level"] >= 200) {
             heroData[i]["levelMultiplier"] = Math.pow(10, 3) * Math.pow(4, 144);
@@ -673,6 +707,7 @@ function recalculate() { //Will be called initially to calculate everything and 
     calculateClickingInfo();
     calculateAllEfficiencies();
     updateEfficiencyData();
+    costToDesiredHeroSouls();
     findNext20Purchases();
 }
 
@@ -759,6 +794,16 @@ function getOptions() {
     } else {
         currentZone = Number(currentZone);
     }
+    if (document.getElementById("enableHeroSouls").checked && document.getElementById("enableHeroSouls").checked != enableHeroSouls) {
+        openedHeroSoulsPopup = false;
+    }
+    enableHeroSouls = document.getElementById("enableHeroSouls").checked;
+    desiredHeroSouls = document.getElementById("desiredHeroSouls").value;
+    if (isNaN(desiredHeroSouls)) {
+        desiredHeroSouls = 0;
+    } else {
+        desiredHeroSouls = Number(desiredHeroSouls);
+    }
 }
 
 function updateAll() {
@@ -788,13 +833,12 @@ function numberWithCommas(number) { //Converts 1234567 into 1,234,567. Also is c
 function formatNumber(num) { //Converts a number into what is shown InGame
     var sign = num && num / Math.abs(num);
     var number = Math.abs(num);
-    var SIUnits = ["", "", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "D", "!", "@", "#", "$", "%", "^", "%", "*", "[", "]", "{", "}", ";", "\'", ":", "\"", "<", ">", "?", "/", "\\", "|", "~", "`", "_", "=", "-", "+"    ];
+    var SIUnits = ["", "", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "D", "!", "@", "#", "$", "%", "^", "&", "*"];
     var digitCount = number && Math.floor(1 + (Math.log(number) / Math.LN10));
     var digitsShown = 0;
     var symbol = "";
-    if (digitCount > 127) {
-        symbol = "*";
-        digitsShown = digitCount - 122
+    if (digitCount > 65) {
+        return num.toPrecision(4);
     } else if (digitCount < 6) {
         digitsShown = digitCount
     } else {
@@ -855,6 +899,9 @@ function updateEfficiencyTable() {
                 rowchanging.cells[1].innerHTML = "N/A";
             }
         }
+    }
+    if (totalGPS > requiredGPS && enableHeroSouls) {
+        createPopup("Hero Souls");
     }
 }
 
@@ -994,7 +1041,7 @@ function createPopup(type, id) {
         for (var i = 0; i < heroData[id]["upgrades"].length; i++) {
             upgradeNamesArray[i] = document.createTextNode(upgradeData[heroData[id]["upgrades"][i]]["name"]);
             upgradeElemArray[i] = document.createElement("input");
-            upgradeElemArray[i].setAttribute("type", "checkbox")
+            upgradeElemArray[i].setAttribute("type", "checkbox");
             if (upgradeData[heroData[id]["upgrades"][i]]["owned"]) {
                 upgradeElemArray[i].setAttribute("checked", "checked");
             }
@@ -1032,8 +1079,7 @@ function createPopup(type, id) {
             };
         }(id);
         popupDiv.appendChild(closeButton);
-    }
-    if (type == "Ancient") {
+    } else if (type == "Ancient") {
         popupDiv.style.display = "block";
         var linebreak = document.createElement("br");
         //Ancient Name
@@ -1058,6 +1104,44 @@ function createPopup(type, id) {
             };
         }(id);
         popupDiv.appendChild(closeButton);
+    } else if (type == "Hero Souls" && !openedHeroSoulsPopup) {
+        openedHeroSoulsPopup = true;
+        popupDiv.style.display = "block";
+        var linebreak = document.createElement("br");
+        var heroSoulsDescElem = document.createTextNode("You are up the stage in this world where you can start buying enough heroes to get the desired amount of " + desiredHeroSouls + " hero souls. If you wish to continue on without ascending you can click on the Ignore button below. If you wish to change the number of hero souls you desire you can type that in the box and press close. Please note that this box will be based off your current zone so please make sure to set the current zone to what you are actually on. If you would like to go ahead with ascending then use the hero level distribution below to aid you in buying the heroes so they are the right level");
+        popupDiv.appendChild(heroSoulsDescElem);
+        popupDiv.appendChild(linebreak.cloneNode(true));
+        popupDiv.appendChild(linebreak.cloneNode(true));
+        for (var i = 0; i < 26; i++) {
+            var heroLevelElem = document.createTextNode(heroData[i]["name"] + " Level: " + heroSoulsLevels[i]);
+            popupDiv.appendChild(heroLevelElem);
+            popupDiv.appendChild(linebreak.cloneNode(true));
+        }
+        popupDiv.appendChild(linebreak.cloneNode(true));
+        var heroSoulsInputDescElem = document.createTextNode("Desired Hero Souls: ");
+        var heroSoulsInputElem = document.createElement("input");
+        heroSoulsInputElem.setAttribute("type", "number");
+        heroSoulsInputElem.setAttribute("value", desiredHeroSouls.toString());
+        heroSoulsInputElem.setAttribute("id", "popupDesiredHeroSouls");
+        popupDiv.appendChild(heroSoulsInputDescElem);
+        popupDiv.appendChild(heroSoulsInputElem);
+        var ignoreButton = document.createElement("input");
+        ignoreButton.setAttribute("type", "button");
+        ignoreButton.setAttribute("value", "Ignore and continue");
+        ignoreButton.onclick = function () {
+            closePopup("Hero Souls", 2)
+        };
+        popupDiv.appendChild(linebreak.cloneNode(true));
+        popupDiv.appendChild(ignoreButton);
+        var closeButton = document.createElement("input");
+        closeButton.setAttribute("type", "button");
+        closeButton.setAttribute("value", "Close and Save");
+        closeButton.onclick = function () {
+            closePopup("Hero Souls", 1);
+            openedHeroSoulsPopup = false;
+        };
+        popupDiv.appendChild(linebreak.cloneNode(true));
+        popupDiv.appendChild(closeButton);
     }
 }
 
@@ -1076,13 +1160,20 @@ function closePopup(type, id) {
             }
             upgradeData[heroData[id]["upgrades"][i]]["owned"] = document.getElementById("upgradeInput" + i).checked;
         }
-    } else {
+    } else if (type == "Ancient") {
         if (ancientData[id]["maxLevel"] == 0 || Number(document.getElementById("ancientLevelInput").value) <= ancientData[id]["maxLevel"]) {
             ancientData[id]["level"] = Number(document.getElementById("ancientLevelInput").value);
         } else {
-            window.alert(ancientData[id]["name"] + "can't be higher than level " + ancientData[id]["maxLevel"])
+            window.alert(ancientData[id]["name"] + "can't be higher than level " + ancientData[id]["maxLevel"]);
             isValid = false;
         }
+    } else if (type == "Hero Souls") {
+        if (id == 2) {
+            document.getElementById("enableHeroSouls").checked = false;
+            enableHeroSouls = false;
+        }
+        desiredHeroSouls = document.getElementById("popupDesiredHeroSouls").value;
+        document.getElementById("desiredHeroSouls").value = desiredHeroSouls;
     }
     if (isValid) {
         document.getElementById("popupdiv").style.display = "none";
