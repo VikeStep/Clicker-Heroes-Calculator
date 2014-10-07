@@ -78,15 +78,19 @@
     <div id="in">
         <div id="savediv">
             <label for="savedata">Enter Save Data:</label><input type="text" id="savedata" name="savedata"/>
+            <input id="updateSaveData" type="button" value="Use Save Data"/>
         </div>
         <div id="indata1">
             <div id="options">
                 <label for="enableClicking">Enable Clicking </label><input type="checkbox" name="enableClicking"
                                                                            id="enableClicking"
+                                                                           onchange="updateValues()"/>
+                <label for="enableCritical">Enable Critical </label><input type="checkbox" name="enableCritical"
+                                                                           id="enableCritical"
                                                                            onchange="updateValues()"/><br/>
-                <!--Enable Critical <input type="radio" name="enableCritical" id="enableCritical"></input><br/> Disabled Until it Works-->
                 <label for="clickSpeed">Click Speed: </label><input type="number" id="clickSpeed" name="clickSpeed"
-                                                                    value="0" onchange="updateValues()"/><br/>
+                                                                    value="0" onchange="updateValues()" min="0"
+                                                                    max="40"/><br/>
                 <label for="currentZone">Current Zone: </label><input type="number" id="currentZone" name="currentZone"
                                                                       value="1" onchange="updateValues()"/><br/>
                 <label for="enableHeroSouls">Check for Hero Souls? </label><input type="checkbox" name="enableHeroSouls"
@@ -95,10 +99,12 @@
                 <label for="desiredHeroSouls">Desired Hero Souls: </label><input type="number" id="desiredHeroSouls"
                                                                                  name="desiredHeroSouls"
                                                                                  value="0" onchange="updateValues()"/>
+                <input id="useDarkRitual" type="button" value="Use Dark Ritual"/>
+                <input id="useEnergDarkRitual" type="button" value="Use Energized Dark Ritual"/>
             </div>
             <div id="buttons">
-                <input id="updateSaveData" type="button" value="Use Save Data"/><br/>
                 <input id="saveAll" type="button" value="Save Your Data"/>
+                <input id="clearSave" type="button" value="Clear Save Data"/>
                 <input id="updateValues" type="button" value="Re-Calculate"/>
             </div>
         </div>
