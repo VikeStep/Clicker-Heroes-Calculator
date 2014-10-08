@@ -882,28 +882,47 @@ function numberWithCommas(number) { //Converts 1234567 into 1,234,567. Also is c
 
 function formatNumber(num) { //Converts a number into what is shown InGame
     if (!scientificNotation) {
-        var sign = num && num / Math.abs(num);
-        var number = Math.abs(num);
-        var SIUnits = ["", "", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "U", "D", "!", "@", "#", "$", "%", "^", "&", "*"];
-        var digitCount = number && Math.floor(1 + (Math.log(number) / Math.LN10));
-        var digitsShown = 0;
-        var symbol = "";
-        if (digitCount > 65) {
+
+        // Avoid divide-by-zero
+        if (!num) {
+          return '0';
+        }
+
+        // Negative powers
+        if (num > -1 || num < 1) {
             return num.toPrecision(4);
-        } else if (digitCount < 6) {
-            digitsShown = digitCount
-        } else {
-            symbol = SIUnits[Math.floor(digitCount / 3)];
-            digitsShown = 3 + (digitCount % 3);
         }
-        var truncNumber = Math.floor(number / Math.pow(10, digitCount - digitsShown));
-        if (sign == 1) {
-            return numberWithCommas(truncNumber) + symbol;
-        } else if (sign == -1) {
-            return "-" + numberWithCommas(truncNumber) + symbol;
-        } else {
-            return 0;
+
+        var SIUnits = ["K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "U", "D", "!", "@", "#", "$", "%", "^", "&", "*"];
+
+        var original = num;
+
+        var sign = num / Math.abs(num);
+        num = Math.abs(num);
+
+        var exponential = num.toExponential().split('e+');
+        var power = +exponential[1];
+
+        var digitsShown = 0;
+        while (power >= 5) {
+          power -= 3;
+          digitsShown++;
         }
+
+        var truncNumber = sign * exponential[0] * Math.pow(10, power);
+
+        var str = numberWithCommas(Math.floor(truncNumber));
+
+        if (digitsShown > SIUnits.length) {
+            return original.toPrecision(4);
+        }
+
+        // Add sign
+        if (digitsShown) {
+            str += SIUnits[digitsShown - 1];
+        }
+
+        return str;
     } else {
         return num.toPrecision(4);
     }
