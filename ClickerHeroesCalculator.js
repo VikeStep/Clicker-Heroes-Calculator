@@ -853,7 +853,7 @@ function numberWithCommas(number) { //Converts 1234567 into 1,234,567. Also is c
 function formatNumber(num) { //Converts a number into what is shown InGame
     var sign = num && num / Math.abs(num);
     var number = Math.abs(num);
-    var SIUnits = ["", "", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "D", "!", "@", "#", "$", "%", "^", "&", "*"];
+    var SIUnits = ["", "", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "U", "D", "!", "@", "#", "$", "%", "^", "&", "*"];
     var digitCount = number && Math.floor(1 + (Math.log(number) / Math.LN10));
     var digitsShown = 0;
     var symbol = "";
