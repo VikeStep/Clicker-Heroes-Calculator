@@ -74,6 +74,8 @@ var allDPSMultiplier = 1;
 var goldMultiplier = 1;
 var isPopupOpen = false;
 var sortedAchievements = [];
+var efficiencyType = 1;
+var effMult = 0.005
 
 //Functions for PreInit Phase - Loading all the data from local storage
 function loadLocalStorage() { //Will grab the data from local storage
@@ -477,9 +479,19 @@ function calculateDPStoGoldRatio(level) {
 }
 
 function calculateEfficiency(cost, change) {
-    var gpsMult = calculateDPStoGoldRatio(currentZone);
     if (change != 0) {
-        return (1.15 * (cost / (gpsMult * totalDPS))) + (cost / (gpsMult * change));
+        if (efficiencyType == 1) {
+            return (1.15 * (cost / totalDPS)) + (cost / change);
+        } else if (efficiencyType == 2) {
+            return cost / change;
+        } else {
+
+            if (change > (totalDPS * effMult)) {
+                return cost / change;
+            } else {
+                return Infinity;
+            }
+        }
     } else {
         return Infinity;
     }
@@ -538,114 +550,125 @@ function DPSGainedHero(heroID, level) {
 }
 
 function calculateAllEfficiencies() {
-    //Heroes (minus Cid)
-    for (var i = 1; i < heroKeys.length; i++) {
-        var cost4xMult = 0;
-        var DPS4xChange = 0;
-        var cost10xMult = 0;
-        var DPS10xChange = 0;
-        //1 Level
-        heroData[i]["efficiency1"] = calculateEfficiency(heroData[i]["nextCost"], heroData[i]["nextDPSChange"]);
-        //Next 4x and 10x Multiplier
-        if (heroData[i]["level"] < 200 && heroData[i]["level"] != 0) {
-            cost4xMult = calculateCostUpToLevel(i, heroData[i]["level"], 200);
-            DPS4xChange = (4 * (heroData[i]["currentDPS"] * (200 / heroData[i]["level"]))) - heroData[i]["currentDPS"];
-            cost10xMult = calculateCostUpToLevel(i, heroData[i]["level"], 1000);
-            DPS10xChange = (10 * Math.pow(4, 32) * (heroData[i]["currentDPS"] * (1000 / heroData[i]["level"]))) - heroData[i]["currentDPS"];
-        } else if (heroData[i]["level"] != 0 && heroData[i]["level"] < 4100) {
-            var next4xlevel = Math.ceil((heroData[i]["level"] + 1) / 25) * 25;
-            cost4xMult = calculateCostUpToLevel(i, heroData[i]["level"], next4xlevel);
-            var other10xbonus = 0;
-            if (next4xlevel % 1000 == 0 && next4xlevel <= 3000) {
-                next4xlevel = next4xlevel + 25;
+    var infLoop = true;
+    effMult = 0.005;
+    while (infLoop) {
+        //Heroes (minus Cid)
+        for (var i = 1; i < heroKeys.length; i++) {
+            var cost4xMult = 0;
+            var DPS4xChange = 0;
+            var cost10xMult = 0;
+            var DPS10xChange = 0;
+            //1 Level
+            heroData[i]["efficiency1"] = calculateEfficiency(heroData[i]["nextCost"], heroData[i]["nextDPSChange"]);
+            //Next 4x and 10x Multiplier
+            if (heroData[i]["level"] < 200 && heroData[i]["level"] != 0) {
+                cost4xMult = calculateCostUpToLevel(i, heroData[i]["level"], 200);
+                DPS4xChange = (4 * (heroData[i]["currentDPS"] * (200 / heroData[i]["level"]))) - heroData[i]["currentDPS"];
+                cost10xMult = calculateCostUpToLevel(i, heroData[i]["level"], 1000);
+                DPS10xChange = (10 * Math.pow(4, 32) * (heroData[i]["currentDPS"] * (1000 / heroData[i]["level"]))) - heroData[i]["currentDPS"];
+            } else if (heroData[i]["level"] != 0 && heroData[i]["level"] < 4100) {
+                var next4xlevel = Math.ceil((heroData[i]["level"] + 1) / 25) * 25;
                 cost4xMult = calculateCostUpToLevel(i, heroData[i]["level"], next4xlevel);
-                other10xbonus = 1;
+                var other10xbonus = 0;
+                if (next4xlevel % 1000 == 0 && next4xlevel <= 3000) {
+                    next4xlevel = next4xlevel + 25;
+                    cost4xMult = calculateCostUpToLevel(i, heroData[i]["level"], next4xlevel);
+                    other10xbonus = 1;
+                }
+                DPS4xChange = (Math.pow(10, other10xbonus) * 4 * (heroData[i]["currentDPS"] * (next4xlevel / heroData[i]["level"]))) - heroData[i]["currentDPS"];
+                if (heroData[i]["level"] < 3000) {
+                    var next10xlevel = Math.ceil((heroData[i]["level"] + 1) / 1000) * 1000;
+                    cost10xMult = calculateCostUpToLevel(i, heroData[i]["level"], next10xlevel);
+                    var other4xbonus = Math.floor((next10xlevel - (heroData[i]["level"] + 1)) / 25);
+                    DPS10xChange = (Math.pow(4, other4xbonus) * 10 * (heroData[i]["currentDPS"] * (next10xlevel / heroData[i]["level"]))) - heroData[i]["currentDPS"];
+                }
+            } else if (heroData[i]["level"] < 4100) {
+                cost4xMult = calculateCostUpToLevel(i, 0, 200);
+                cost10xMult = calculateCostUpToLevel(i, 0, 1000);
+                DPS4xChange = 200 * heroData[i]["baseDPS"] * achievementMultiplier * darkRitualMultiplier * allHeroMultiplier * heroSoulsMultiplier * 4 * (1 + (heroData[i]["gilded"] * (0.5 + (0.02 * ancientData[25]["level"]))));
+                DPS10xChange = 1000 * heroData[i]["baseDPS"] * achievementMultiplier * darkRitualMultiplier * allHeroMultiplier * heroSoulsMultiplier * 10 * Math.pow(4, 32) * (1 + (heroData[i]["gilded"] * (0.5 + (0.02 * ancientData[25]["level"]))));
             }
-            DPS4xChange = (Math.pow(10, other10xbonus) * 4 * (heroData[i]["currentDPS"] * (next4xlevel / heroData[i]["level"]))) - heroData[i]["currentDPS"];
-            if (heroData[i]["level"] < 3000) {
-                var next10xlevel = Math.ceil((heroData[i]["level"] + 1) / 1000) * 1000;
-                cost10xMult = calculateCostUpToLevel(i, heroData[i]["level"], next10xlevel);
-                var other4xbonus = Math.floor((next10xlevel - (heroData[i]["level"] + 1)) / 25);
-                DPS10xChange = (Math.pow(4, other4xbonus) * 10 * (heroData[i]["currentDPS"] * (next10xlevel / heroData[i]["level"]))) - heroData[i]["currentDPS"];
-            }
-        } else if (heroData[i]["level"] < 4100) {
-            cost4xMult = calculateCostUpToLevel(i, 0, 200);
-            cost10xMult = calculateCostUpToLevel(i, 0, 1000);
-            DPS4xChange = 200 * heroData[i]["baseDPS"] * achievementMultiplier * darkRitualMultiplier * allHeroMultiplier * heroSoulsMultiplier * 4 * (1 + (heroData[i]["gilded"] * (0.5 + (0.02 * ancientData[25]["level"]))));
-            DPS10xChange = 1000 * heroData[i]["baseDPS"] * achievementMultiplier * darkRitualMultiplier * allHeroMultiplier * heroSoulsMultiplier * 10 * Math.pow(4, 32) * (1 + (heroData[i]["gilded"] * (0.5 + (0.02 * ancientData[25]["level"]))));
+            heroData[i]["efficiency4x"] = calculateEfficiency(cost4xMult, DPS4xChange);
+            heroData[i]["efficiency10x"] = calculateEfficiency(cost10xMult, DPS10xChange);
         }
-        heroData[i]["efficiency4x"] = calculateEfficiency(cost4xMult, DPS4xChange);
-        heroData[i]["efficiency10x"] = calculateEfficiency(cost10xMult, DPS10xChange);
-    }
-    heroData[0]["efficiency1"] = calculateEfficiency(heroData[0]["nextCost"], heroData[0]["nextDPSChange"]);
+        heroData[0]["efficiency1"] = calculateEfficiency(heroData[0]["nextCost"], heroData[0]["nextDPSChange"]);
 
-    //Upgrades
-    for (var i = 0; i < upgradeKeys.length; i++) {
-        if (upgradeData[i]["owned"] == false) {
-            upgradeData[i]["totalCost"] = calculateUpgradeTotalCost(upgradeData[i]["heroID"] - 1, i);
-            var heroA = heroData[upgradeData[i]["heroID"] - 1];
-            var DPSFromHero = DPSGainedHero(upgradeData[i]["heroID"] - 1, upgradeData[i]["level"]);
-            switch (upgradeData[i]["type"]) {
-                //Should work, I need to make some documentation on how these formulas were made to make this clear
-                case "upgradeClickPercent":
-                    var upgradeCidChange;
-                    if (heroData[0]["level"] < upgradeData[i]["level"] && heroData[0]["level"] != 0) {
-                        upgradeCidChange = heroData[0]["currentClickDamage"] * (((upgradeData[i]["level"] / heroData[0]["level"]) * (1 + (Number(upgradeData[i]["upgradeParams"][0]) / 100))) - 1);
-                    } else if (heroData[0]["level"] < upgradeData[i]["level"]) {
-                        upgradeCidChange = upgradeData[i]["level"] * achievementMultiplier * allHeroMultiplier * darkRitualMultiplier * heroSoulsMultiplier * (1 + (Number(upgradeData[i]["upgradeParams"][0]) / 100));
-                    } else {
-                        upgradeCidChange = ((heroData[0]["currentClickDamage"] * Number(upgradeData[i]["upgradeParams"][0])) / 100);
-                    }
-                    upgradeData[i]["DPSChange"] = 0.2 * (ancientData[16]["level"] + 5) * upgradeCidChange * clickSpeed * enableClicking;
-                    if (enableCritical && enableClicking) {
-                        upgradeData[i]["DPSChange"] = (upgradeData[i]["DPSChange"] * criticalClickDamage) / clickDamage;
-                    }
-                    break;
+        //Upgrades
+        for (var i = 0; i < upgradeKeys.length; i++) {
+            if (upgradeData[i]["owned"] == false) {
+                upgradeData[i]["totalCost"] = calculateUpgradeTotalCost(upgradeData[i]["heroID"] - 1, i);
+                var heroA = heroData[upgradeData[i]["heroID"] - 1];
+                var DPSFromHero = DPSGainedHero(upgradeData[i]["heroID"] - 1, upgradeData[i]["level"]);
+                switch (upgradeData[i]["type"]) {
+                    //Should work, I need to make some documentation on how these formulas were made to make this clear
+                    case "upgradeClickPercent":
+                        var upgradeCidChange;
+                        if (heroData[0]["level"] < upgradeData[i]["level"] && heroData[0]["level"] != 0) {
+                            upgradeCidChange = heroData[0]["currentClickDamage"] * (((upgradeData[i]["level"] / heroData[0]["level"]) * (1 + (Number(upgradeData[i]["upgradeParams"][0]) / 100))) - 1);
+                        } else if (heroData[0]["level"] < upgradeData[i]["level"]) {
+                            upgradeCidChange = upgradeData[i]["level"] * achievementMultiplier * allHeroMultiplier * darkRitualMultiplier * heroSoulsMultiplier * (1 + (Number(upgradeData[i]["upgradeParams"][0]) / 100));
+                        } else {
+                            upgradeCidChange = ((heroData[0]["currentClickDamage"] * Number(upgradeData[i]["upgradeParams"][0])) / 100);
+                        }
+                        upgradeData[i]["DPSChange"] = 0.2 * (ancientData[16]["level"] + 5) * upgradeCidChange * clickSpeed * enableClicking;
+                        if (enableCritical && enableClicking) {
+                            upgradeData[i]["DPSChange"] = (upgradeData[i]["DPSChange"] * criticalClickDamage) / clickDamage;
+                        }
+                        break;
 
-                case "upgradeHeroPercent":
-                    var heroDPSIncrease = (0.01 * Number(upgradeData[i]["upgradeParams"][1]) * (heroA["currentDPS"] + DPSFromHero)) + DPSFromHero;
-                    /*if (enableCritical && enableClicking) {
-                     var clickChange = ((0.002 * ancientData[16]["level"]) + 0.01) * heroDPSIncrease * upgradeClickDPS;
-                     heroDPSIncrease += (clickChange * criticalClickDamage) / clickDamage;
-                     } else {
-                     heroDPSIncrease += enableClicking * clickSpeed * (((0.002 * ancientData[16]["level"]) + 0.01) * heroDPSIncrease * upgradeClickMultiplier);
-                     }*/
-                    upgradeData[i]["DPSChange"] = heroDPSIncrease;
-                    break;
+                    case "upgradeHeroPercent":
+                        var heroDPSIncrease = (0.01 * Number(upgradeData[i]["upgradeParams"][1]) * (heroA["currentDPS"] + DPSFromHero)) + DPSFromHero;
+                        /*if (enableCritical && enableClicking) {
+                         var clickChange = ((0.002 * ancientData[16]["level"]) + 0.01) * heroDPSIncrease * upgradeClickDPS;
+                         heroDPSIncrease += (clickChange * criticalClickDamage) / clickDamage;
+                         } else {
+                         heroDPSIncrease += enableClicking * clickSpeed * (((0.002 * ancientData[16]["level"]) + 0.01) * heroDPSIncrease * upgradeClickMultiplier);
+                         }*/
+                        upgradeData[i]["DPSChange"] = heroDPSIncrease;
+                        break;
 
-                case "upgradeGoldFoundPercent": //Assuming DPS and GPS are directly proportional this will work(which they are)
-                    upgradeData[i]["DPSChange"] = (0.01 * Number(upgradeData[i]["upgradeParams"][0]) * (totalDPS + DPSFromHero)) + DPSFromHero;
+                    case "upgradeGoldFoundPercent": //Assuming DPS and GPS are directly proportional this will work(which they are)
+                        upgradeData[i]["DPSChange"] = (0.01 * Number(upgradeData[i]["upgradeParams"][0]) * (totalDPS + DPSFromHero)) + DPSFromHero;
 
-                case "upgradeEveryonePercent": //THIS NEEDS FIXING FOR CLICK STUFF - Formula For now: http://imgur.com/pmP2JEK
-                    var heroDPSIncrease = (0.01 * Number(upgradeData[i]["upgradeParams"][0]) * (heroDPS + DPSFromHero)) + DPSFromHero; //Simplified Calculation that avoids problems with integer precision
-                    //var clickDPSIncrease = Number(upgradeData[i]["upgradeParams"][0]); //0.01 * Number(upgradeData[i]["upgradeParams"][0]) * heroData[0]["currentClickDamage"] * (1 + (ancientData[16]["level"] * 0.2));
-                    //var criticalDPSIncrease = (clickDPSIncrease * criticalClickDamage) / clickDamage;
-                    upgradeData[i]["DPSChange"] = heroDPSIncrease; // + (enableClicking * ((!enableCritical * clickDPSIncrease) + (enableCritical * criticalDPSIncrease)));
-                    break;
+                    case "upgradeEveryonePercent": //THIS NEEDS FIXING FOR CLICK STUFF - Formula For now: http://imgur.com/pmP2JEK
+                        var heroDPSIncrease = (0.01 * Number(upgradeData[i]["upgradeParams"][0]) * (heroDPS + DPSFromHero)) + DPSFromHero; //Simplified Calculation that avoids problems with integer precision
+                        //var clickDPSIncrease = Number(upgradeData[i]["upgradeParams"][0]); //0.01 * Number(upgradeData[i]["upgradeParams"][0]) * heroData[0]["currentClickDamage"] * (1 + (ancientData[16]["level"] * 0.2));
+                        //var criticalDPSIncrease = (clickDPSIncrease * criticalClickDamage) / clickDamage;
+                        upgradeData[i]["DPSChange"] = heroDPSIncrease; // + (enableClicking * ((!enableCritical * clickDPSIncrease) + (enableCritical * criticalDPSIncrease)));
+                        break;
 
-                case "upgradeCriticalChance":
-                    upgradeData[i]["DPSChange"] = enableClicking * enableCritical * 0.01 * clickSpeed * (criticalClickMultiplier - 1) * clickDamage * Number(upgradeData[i]["upgradeParams"][0]);
-                    break;
+                    case "upgradeCriticalChance":
+                        upgradeData[i]["DPSChange"] = enableClicking * enableCritical * 0.01 * clickSpeed * (criticalClickMultiplier - 1) * clickDamage * Number(upgradeData[i]["upgradeParams"][0]);
+                        break;
 
-                case "upgradeCriticalDamage":
-                    upgradeData[i]["DPSChange"] = enableClicking * enableCritical * clickSpeed * criticalClickChance * clickDamage * Number(upgradeData[i]["upgradeParams"][0]);
-                    break;
+                    case "upgradeCriticalDamage":
+                        upgradeData[i]["DPSChange"] = enableClicking * enableCritical * clickSpeed * criticalClickChance * clickDamage * Number(upgradeData[i]["upgradeParams"][0]);
+                        break;
 
-                case "upgradeClickDpsPercent":
-                    var clickDPSIncrease = heroDPS * 0.01 * Number(upgradeData[i]["upgradeParams"][0]) * (1 + (ancientData[16]["level"] * 0.2));
-                    var criticalDPSIncrease = (clickDPSIncrease * criticalClickDamage) / clickDamage;
-                    upgradeData[i]["DPSChange"] = enableClicking * ((!enableCritical * clickDPSIncrease * clickSpeed) + (enableCritical * criticalDPSIncrease * clickSpeed));
-                    break;
+                    case "upgradeClickDpsPercent":
+                        var clickDPSIncrease = heroDPS * 0.01 * Number(upgradeData[i]["upgradeParams"][0]) * (1 + (ancientData[16]["level"] * 0.2));
+                        var criticalDPSIncrease = (clickDPSIncrease * criticalClickDamage) / clickDamage;
+                        upgradeData[i]["DPSChange"] = enableClicking * ((!enableCritical * clickDPSIncrease * clickSpeed) + (enableCritical * criticalDPSIncrease * clickSpeed));
+                        break;
 
-                case "upgradeGetSkill":
-                case "finalUpgrade":
-                default:
-                    upgradeData[i]["DPSChange"] = 0;
-                    break;
+                    case "upgradeGetSkill":
+                    case "finalUpgrade":
+                    default:
+                        upgradeData[i]["DPSChange"] = 0;
+                        break;
+                }
+                upgradeData[i]["efficiency"] = calculateEfficiency(upgradeData[i]["totalCost"], upgradeData[i]["DPSChange"])
+            } else {
+                upgradeData[i]["efficiency"] = "N/A";
             }
-            upgradeData[i]["efficiency"] = calculateEfficiency(upgradeData[i]["totalCost"], upgradeData[i]["DPSChange"])
+        }
+        updateEfficiencyData();
+        if (efficiencyData[1][1] == Infinity) {
+            console.log(effMult);
+            effMult = effMult * 0.005;
         } else {
-            upgradeData[i]["efficiency"] = "N/A";
+            infLoop = false;
         }
     }
 }
@@ -1033,6 +1056,7 @@ function updateStats() {
     document.getElementById("statsupgrademultiplier").innerHTML = (+allHeroMultiplier.toFixed(4)).toString();
     document.getElementById("statsherosoulsmultiplier").innerHTML = (+heroSoulsMultiplier.toFixed(4)).toString();
     document.getElementById("statsdarkritualmultiplier").innerHTML = (+darkRitualMultiplier.toFixed(4)).toString();
+    document.getElementById("statsefficiencyType").innerHTML = (efficiencyType.toString());
 }
 
 function updateHeroDataOutTable() {
@@ -1301,6 +1325,10 @@ function addEventListeners() { //Everything that requires waiting for user input
     document.getElementById("updateValues").onclick = updateValues;
     document.getElementById("clearSave").onclick = function () {
         localStorage.removeItem("save");
+        updateValues();
+    }
+    document.getElementById("changeEfficiencyType").onclick = function () {
+        efficiencyType = (efficiencyType % 3) + 1;
         updateValues();
     }
     document.getElementById("useDarkRitual").onclick = function () {
