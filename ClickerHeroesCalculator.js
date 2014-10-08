@@ -939,7 +939,10 @@ function updateEfficiencyTable() {
                 rowchanging.cells[0].innerHTML = heroData[next20Purchases[rownum][3]]["name"];
                 rowchanging.cells[1].innerHTML = next20Purchases[rownum][4];
             } else {
-                rowchanging.cells[0].innerHTML = upgradeData[next20Purchases[rownum][3]]["name"];
+                var upgradeDiv = document.createElement("div");
+                upgradeDiv.innerHTML = upgradeData[next20Purchases[rownum][3]]["name"] + "<br/>" + heroData[Number(upgradeData[next20Purchases[rownum][3]]["heroID"]) - 1]["name"];
+                rowchanging.cells[0].innerHTML = "";
+                rowchanging.cells[0].appendChild(upgradeDiv);
                 rowchanging.cells[1].innerHTML = "N/A";
             }
         }
