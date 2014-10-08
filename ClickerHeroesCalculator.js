@@ -916,7 +916,9 @@ function updateEfficiencyTable() {
                 insertingRow.insertCell(0).appendChild(document.createTextNode(heroData[next20Purchases[rownum][3]]["name"]));
                 insertingRow.insertCell(1).appendChild(document.createTextNode(next20Purchases[rownum][4]));
             } else {
-                insertingRow.insertCell(0).appendChild(document.createTextNode(upgradeData[next20Purchases[rownum][3]]["name"]));
+                var upgradeDiv = document.createElement("div");
+                upgradeDiv.innerHTML = upgradeData[next20Purchases[rownum][3]]["name"] + "<br/>" + heroData[Number(upgradeData[next20Purchases[rownum][3]]["heroID"]) - 1]["name"];
+                insertingRow.insertCell(0).appendChild(upgradeDiv);
                 insertingRow.insertCell(1).appendChild(document.createTextNode("N/A"));
             }
             var insertingButton = document.createElement("input");
