@@ -75,7 +75,8 @@ var goldMultiplier = 1;
 var isPopupOpen = false;
 var sortedAchievements = [];
 var efficiencyType = 1;
-var effMult = 0.005
+var effMult = 0.005;
+var scientificNotation = false;
 
 //Functions for PreInit Phase - Loading all the data from local storage
 function loadLocalStorage() { //Will grab the data from local storage
@@ -309,7 +310,7 @@ function calculateGlobalMultipliers() { //Calculates global multipliers that cov
             goldMultiplier = goldMultiplier * (1 + (Number(upgradeData[i]["upgradeParams"][0]) / 100));
         }
     }
-    heroSoulsMultiplier = 1 + (heroSouls / 10);
+    heroSoulsMultiplier = 1 + (heroSouls / 10) + (ancientData[13]["level"] * 0.11);
     darkRitualMultiplier = Math.pow(1.05, darkRitualsUsed) * Math.pow(1.1, energizedDarkRitualsUsed);
 }
 
@@ -484,10 +485,15 @@ function calculateEfficiency(cost, change) {
             return (1.15 * (cost / totalDPS)) + (cost / change);
         } else if (efficiencyType == 2) {
             return cost / change;
-        } else {
-
+        } else if (efficiencyType == 3) {
             if (change > (totalDPS * effMult)) {
                 return cost / change;
+            } else {
+                return Infinity;
+            }
+        } else {
+            if (change > (totalDPS * effMult)) {
+                return (1.15 * (cost / totalDPS)) + (cost / change);
             } else {
                 return Infinity;
             }
@@ -550,6 +556,7 @@ function DPSGainedHero(heroID, level) {
 }
 
 function calculateAllEfficiencies() {
+    calculateDPStoGoldRatio(currentZone);
     var infLoop = true;
     effMult = 0.005;
     while (infLoop) {
@@ -874,27 +881,31 @@ function numberWithCommas(number) { //Converts 1234567 into 1,234,567. Also is c
 }
 
 function formatNumber(num) { //Converts a number into what is shown InGame
-    var sign = num && num / Math.abs(num);
-    var number = Math.abs(num);
-    var SIUnits = ["", "", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "U", "D", "!", "@", "#", "$", "%", "^", "&", "*"];
-    var digitCount = number && Math.floor(1 + (Math.log(number) / Math.LN10));
-    var digitsShown = 0;
-    var symbol = "";
-    if (digitCount > 65) {
+    if (!scientificNotation) {
+        var sign = num && num / Math.abs(num);
+        var number = Math.abs(num);
+        var SIUnits = ["", "", "K", "M", "B", "T", "q", "Q", "s", "S", "O", "N", "d", "U", "D", "!", "@", "#", "$", "%", "^", "&", "*"];
+        var digitCount = number && Math.floor(1 + (Math.log(number) / Math.LN10));
+        var digitsShown = 0;
+        var symbol = "";
+        if (digitCount > 65) {
+            return num.toPrecision(4);
+        } else if (digitCount < 6) {
+            digitsShown = digitCount
+        } else {
+            symbol = SIUnits[Math.floor(digitCount / 3)];
+            digitsShown = 3 + (digitCount % 3);
+        }
+        var truncNumber = Math.floor(number / Math.pow(10, digitCount - digitsShown));
+        if (sign == 1) {
+            return numberWithCommas(truncNumber) + symbol;
+        } else if (sign == -1) {
+            return "-" + numberWithCommas(truncNumber) + symbol;
+        } else {
+            return 0;
+        }
+    } else {
         return num.toPrecision(4);
-    } else if (digitCount < 6) {
-        digitsShown = digitCount
-    } else {
-        symbol = SIUnits[Math.floor(digitCount / 3)];
-        digitsShown = 3 + (digitCount % 3);
-    }
-    var truncNumber = Math.floor(number / Math.pow(10, digitCount - digitsShown));
-    if (sign == 1) {
-        return numberWithCommas(truncNumber) + symbol;
-    } else if (sign == -1) {
-        return "-" + numberWithCommas(truncNumber) + symbol;
-    } else {
-        return 0;
     }
 }
 
@@ -1326,11 +1337,15 @@ function addEventListeners() { //Everything that requires waiting for user input
     document.getElementById("clearSave").onclick = function () {
         localStorage.removeItem("save");
         updateValues();
-    }
+    };
     document.getElementById("changeEfficiencyType").onclick = function () {
-        efficiencyType = (efficiencyType % 3) + 1;
+        efficiencyType = (efficiencyType % 4) + 1;
         updateValues();
-    }
+    };
+    document.getElementById("enableScientific").onclick = function () {
+        scientificNotation = !scientificNotation;
+        updateValues();
+    };
     document.getElementById("useDarkRitual").onclick = function () {
         allDPSMultiplier *= 1.05;
         updateValues();
