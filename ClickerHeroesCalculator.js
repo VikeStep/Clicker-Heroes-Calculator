@@ -889,7 +889,7 @@ function formatNumber(num) { //Converts a number into what is shown InGame
         }
 
         // Negative powers
-        if (num > -1 || num < 1) {
+        if (num > -1 && num < 1) {
             return num.toPrecision(4);
         }
 
